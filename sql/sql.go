@@ -1,8 +1,20 @@
 package sql
 
+import "database/sql"
+
 // import "reflect"
 
 type SQL struct {
+}
+
+var MYDB *sql.DB
+
+func init() {
+	_db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/test")
+	if err != nil {
+		panic(err)
+	}
+	MYDB = _db
 }
 
 // func SELECT(columns ...string) *SQLSM {

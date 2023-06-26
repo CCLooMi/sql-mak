@@ -8,7 +8,7 @@ import (
 )
 
 type SQLSMExecutor struct {
-	*SQLExecutor
+	SQLExecutor
 	sm *SQLSM
 }
 
@@ -28,7 +28,7 @@ type ByPageFilter interface {
 }
 
 func NewSQLSMExecutor(sm *SQLSM) *SQLSMExecutor {
-	return &SQLSMExecutor{SQLExecutor: NewSQLExecutor(&sm.SQLGod), sm: sm}
+	return &SQLSMExecutor{SQLExecutor: *NewSQLExecutor(&sm.AbstractSQLGod), sm: sm}
 }
 
 func (e *SQLSMExecutor) SaveResultToObject(targetObject interface{}) *SQLSMExecutor {
@@ -129,7 +129,15 @@ func (e *SQLSMExecutor) GetResultAsList(elementType reflect.Type) []map[string]i
 }
 
 func (e *SQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
-	panic("not implemented")
+	rows, err := MYDB.Query("SELECT * FROM user u WHERE u.id = ?", 1)
+	if err != nil {
+		panic(err)
+	}
+	rse(rows)
+	result, err := MYDB.Exec("INSERT INTO users(id,name) VALUES(?,?)", 1, "test")
+	count, err := result.RowsAffected()
+	fmt.Printf("rows affected: %d\n", count)
+	// panic("not implemented")
 }
 
 func (e *SQLSMExecutor) Count() int64 {

@@ -13,9 +13,9 @@ type SQLExecutor struct {
 
 type ResultSetExtractor func(rs *sql.Rows) interface{}
 
-func NewSQLExecutor(god *SQLGod) *SQLExecutor {
+func NewSQLExecutor(god SQLGod) *SQLExecutor {
 	return &SQLExecutor{
 		log: logrus.WithField("component", "SQLExecutor"),
-		god: god,
+		god: &god,
 	}
 }
