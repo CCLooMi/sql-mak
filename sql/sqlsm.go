@@ -8,8 +8,8 @@ import (
 )
 
 type SQLSM struct {
-	// SQLGod
 	AbstractSQLGod
+	AbstractSQLGodChild
 	columns      []interface{}
 	columnAlias  []string
 	tables       []interface{}
@@ -30,11 +30,11 @@ func NewSQLSM() *SQLSM {
 		columnAlias: make([]string, 0),
 		tables:      make([]interface{}, 0),
 	}
-	sm.AbstractSQLGod = *NewAbstractSQLGod()
+	sm.AbstractSQLGod = *NewAbstractSQLGod(sm)
 	return sm
 }
 
-func (sm *SQLSM) columnAliasFunc() []string {
+func (sm *SQLSM) ColumnAlias() []string {
 	return sm.columnAlias
 }
 
@@ -78,7 +78,7 @@ func (s *SQLSM) SELECT_AS_EXP(exp *EXP, alias string) *SQLSM {
 func (s *SQLSM) FROM(table interface{}, alias string) *SQLSM {
 	switch v := table.(type) {
 	case reflect.Type:
-		s.tables = append(s.tables, tableName(v)+" "+alias)
+		s.tables = append(s.tables, s.TableName(v)+" "+alias)
 	case string:
 		s.tables = append(s.tables, table.(string)+" "+alias)
 	case *SQLSM:
@@ -89,17 +89,11 @@ func (s *SQLSM) FROM(table interface{}, alias string) *SQLSM {
 	return s
 }
 
-func tableName(c reflect.Type) string {
-	if name, ok := c.FieldByName("TABLE_NAME"); ok {
-		return name.Tag.Get("sql")
-	}
-	return ""
-}
 func (s *SQLSM) JOIN(table interface{}, alias string, args ...interface{}) *SQLSM {
 	var join string
 	switch v := table.(type) {
 	case reflect.Type:
-		join = "JOIN " + tableName(v) + " " + alias
+		join = "JOIN " + s.TableName(v) + " " + alias
 	case string:
 		join = "JOIN " + table.(string) + " " + alias
 	case *SQLSM:
@@ -119,7 +113,7 @@ func (s *SQLSM) JOIN_ON(table interface{}, alias string, on string, args ...inte
 	var join string
 	switch v := table.(type) {
 	case reflect.Type:
-		join = "JOIN " + tableName(v) + " " + alias + " ON " + on
+		join = "JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
@@ -140,7 +134,7 @@ func (s *SQLSM) LEFT_JOIN(table interface{}, alias string, on string, args ...in
 	var join string
 	switch v := table.(type) {
 	case reflect.Type:
-		join = "LEFT JOIN " + tableName(v) + " " + alias + " ON " + on
+		join = "LEFT JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "LEFT JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
@@ -161,7 +155,7 @@ func (s *SQLSM) RIGHT_JOIN(table interface{}, alias string, on string, args ...i
 	var join string
 	switch v := table.(type) {
 	case reflect.Type:
-		join = "RIGHT JOIN " + tableName(v) + " " + alias + " ON " + on
+		join = "RIGHT JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "RIGHT JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
@@ -182,7 +176,7 @@ func (s *SQLSM) INNER_JOIN(table interface{}, alias string, on string, args ...i
 	var join string
 	switch v := table.(type) {
 	case reflect.Type:
-		join = "INNER JOIN " + tableName(v) + " " + alias + " ON " + on
+		join = "INNER JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "INNER JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
@@ -284,7 +278,7 @@ func (s *SQLSM) WHERE_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQ
 	sb.WriteRune(' ')
 	sb.WriteString(inOrNotIn.value())
 	sb.WriteRune('(')
-	sb.WriteString(subquery.sql())
+	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
 	s.args = append(s.args, subquery.args...)
 	s.where = sb.String()
@@ -331,7 +325,7 @@ func (s *SQLSM) AND_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLS
 	sb.WriteRune(' ')
 	sb.WriteString(inOrNotIn.value())
 	sb.WriteRune('(')
-	sb.WriteString(subquery.sql())
+	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
 	s.args = append(s.args, subquery.args...)
 	if s.andor == nil {
@@ -380,7 +374,7 @@ func (s *SQLSM) OR_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLSM
 	sb.WriteRune(' ')
 	sb.WriteString(inOrNotIn.value())
 	sb.WriteRune('(')
-	sb.WriteString(subquery.sql())
+	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
 	s.args = append(s.args, subquery.args...)
 	if s.andor == nil {
@@ -429,7 +423,7 @@ func (s *SQLSM) ExpSQL() string {
 	return sb.String()
 }
 
-func (s *SQLSM) execute() SQLSMExecutor {
+func (s *SQLSM) Execute() SQLSMExecutor {
 	executor, _ := GetExecutor((*SQLGod)(unsafe.Pointer(s)), reflect.TypeOf(SQLSMExecutor{})).(SQLSMExecutor)
 	return executor
 }
