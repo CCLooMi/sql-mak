@@ -40,10 +40,10 @@ func (sm *SQLSM) ColumnAlias() []string {
 
 func (s *SQLSM) SELECT(cols ...interface{}) *SQLSM {
 	for _, col := range cols {
-		switch col.(type) {
+		switch colV := col.(type) {
 		case string:
-			s.columns = append(s.columns, col.(string))
-			s.columnAlias = append(s.columnAlias, col.(string)[strings.LastIndex(col.(string), ".")+1:])
+			s.columns = append(s.columns, colV)
+			s.columnAlias = append(s.columnAlias, colV[strings.LastIndex(colV, ".")+1:])
 		case EXP:
 			exp := col.(EXP)
 			s.columns = append(s.columns, exp)
@@ -432,21 +432,20 @@ func (s *SQLSM) _sql(sb *strings.Builder) {
 	sb.WriteString("SELECT ")
 	if len(s.columns) > 0 {
 		for i, col := range s.columns {
-			switch col.(type) {
+			switch colV := col.(type) {
 			case string:
-				sb.WriteString(col.(string))
+				sb.WriteString(colV)
 			case A:
-				smCol := col.(A)
 				sb.WriteRune('(')
-				smCol.sm._sql(sb)
+				colV.sm._sql(sb)
 				sb.WriteString(") AS ")
-				sb.WriteString(smCol.alias)
+				sb.WriteString(colV.alias)
 			case B:
-				exp := col.(B).exp
-				if col.(B).alias != "" {
+				exp := colV.exp
+				if colV.alias != "" {
 					sb.WriteString(exp.Exp())
 					sb.WriteString(" AS ")
-					sb.WriteString(col.(B).alias)
+					sb.WriteString(colV.alias)
 				} else {
 					sb.WriteString(exp.Exp())
 				}
@@ -462,15 +461,15 @@ func (s *SQLSM) _sql(sb *strings.Builder) {
 	if len(s.tables) > 0 {
 		sb.WriteString("FROM ")
 		for i, table := range s.tables {
-			switch table.(type) {
+			switch tv := table.(type) {
 			case string:
-				sb.WriteString(table.(string))
+				sb.WriteString(tv)
 			case A:
-				sm := table.(A).sm
+				sm := tv.sm
 				sb.WriteRune('(')
 				sm._sql(sb)
 				sb.WriteRune(')')
-				sb.WriteString(table.(A).alias)
+				sb.WriteString(tv.alias)
 			}
 			if i != len(s.tables) {
 				sb.WriteRune(',')
@@ -480,18 +479,19 @@ func (s *SQLSM) _sql(sb *strings.Builder) {
 	}
 	if s.joins != nil {
 		for _, join := range s.joins {
-			switch join.(type) {
+			switch jv := join.(type) {
 			case string:
-				sb.WriteString(join.(string))
+				sb.WriteString(jv)
 			default:
 				oa := join.([3]interface{})
 				sb.WriteString(oa[0].(string))
-				sm := oa[1].(A).sm
-				if oa[1].(A).alias != "" {
+				oa1 := oa[1].(A)
+				sm := oa1.sm
+				if oa1.alias != "" {
 					sb.WriteRune('(')
 					sm._sql(sb)
 					sb.WriteRune(')')
-					sb.WriteString(oa[1].(A).alias)
+					sb.WriteString(oa1.alias)
 				} else {
 					sm._sql(sb)
 				}
@@ -532,18 +532,19 @@ func (s *SQLSM) _sql(sb *strings.Builder) {
 	}
 	if s.unions != nil {
 		for _, union := range s.unions {
-			switch union.(type) {
+			switch uv := union.(type) {
 			case string:
-				sb.WriteString(union.(string))
+				sb.WriteString(uv)
 			default:
 				oa := union.([3]interface{})
 				sb.WriteString(oa[0].(string))
-				sm := oa[1].(A).sm
-				if oa[1].(A).alias != "" {
+				oa1 := oa[1].(A)
+				sm := oa1.sm
+				if oa1.alias != "" {
 					sb.WriteRune('(')
 					sm._sql(sb)
 					sb.WriteRune(')')
-					sb.WriteString(oa[1].(A).alias)
+					sb.WriteString(oa1.alias)
 				} else {
 					sm._sql(sb)
 				}
@@ -573,15 +574,15 @@ func (s *SQLSM) _countSQL(sb *strings.Builder) {
 	if len(s.tables) > 0 {
 		sb.WriteString("FROM ")
 		for i, table := range s.tables {
-			switch table.(type) {
+			switch tv := table.(type) {
 			case string:
-				sb.WriteString(table.(string))
+				sb.WriteString(tv)
 			case A:
-				sm := table.(A).sm
+				sm := tv.sm
 				sb.WriteRune('(')
 				sm._sql(sb)
 				sb.WriteRune(')')
-				sb.WriteString(table.(A).alias)
+				sb.WriteString(tv.alias)
 			}
 			if i != len(s.tables)-1 {
 				sb.WriteRune(',')
@@ -591,18 +592,19 @@ func (s *SQLSM) _countSQL(sb *strings.Builder) {
 	}
 	if s.joins != nil {
 		for _, join := range s.joins {
-			switch join.(type) {
+			switch jv := join.(type) {
 			case string:
-				sb.WriteString(join.(string))
+				sb.WriteString(jv)
 			default:
 				oa := join.([3]interface{})
 				sb.WriteString(oa[0].(string))
-				sm := oa[1].(A).sm
-				if oa[1].(A).alias != "" {
+				oa1 := oa[1].(A)
+				sm := oa1.sm
+				if oa1.alias != "" {
 					sb.WriteRune('(')
 					sm._sql(sb)
 					sb.WriteRune(')')
-					sb.WriteString(oa[1].(A).alias)
+					sb.WriteString(oa1.alias)
 				} else {
 					sm._sql(sb)
 				}
