@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"unsafe"
 )
 
 type SQLSM struct {
@@ -30,7 +29,11 @@ func NewSQLSM() *SQLSM {
 		columnAlias: make([]string, 0),
 		tables:      make([]interface{}, 0),
 	}
-	sm.AbstractSQLGod = *NewAbstractSQLGod(sm)
+	a := sm.toAbstractSQLGodChild()
+	sm.AbstractSQLGod = *NewAbstractSQLGod(&a)
+	return sm
+}
+func (sm *SQLSM) toAbstractSQLGodChild() AbstractSQLGodChild {
 	return sm
 }
 
@@ -424,7 +427,8 @@ func (s *SQLSM) ExpSQL() string {
 }
 
 func (s *SQLSM) Execute() SQLSMExecutor {
-	executor, _ := GetExecutor((*SQLGod)(unsafe.Pointer(s)), reflect.TypeOf(SQLSMExecutor{})).(SQLSMExecutor)
+	god := s.toSQLGod()
+	executor, _ := GetExecutor(&god, reflect.TypeOf(SQLSMExecutor{})).(SQLSMExecutor)
 	return executor
 }
 

@@ -9,7 +9,16 @@ import (
 
 type SQLSMExecutor struct {
 	SQLExecutor
-	sm *SQLSM
+	sm    *SQLSM
+	child SQLSMExecutorChild
+}
+
+type SQLSMExecutorChild interface {
+	GetResultAsObject(elementType reflect.Type) interface{}
+	GetResultAsMap() map[string]interface{}
+	GetResultAsList(elementType reflect.Type) []map[string]interface{}
+	ExtractorResultSet(rse ResultSetExtractor) interface{}
+	Count() int64
 }
 
 type PageDataBean struct {
@@ -27,8 +36,12 @@ type ByPageFilter interface {
 	DoFilter(rs *sql.Rows)
 }
 
-func NewSQLSMExecutor(sm *SQLSM) *SQLSMExecutor {
-	return &SQLSMExecutor{SQLExecutor: *NewSQLExecutor(&sm.AbstractSQLGod), sm: sm}
+func NewSQLSMExecutor(sm *SQLSM, child *SQLSMExecutorChild) *SQLSMExecutor {
+	sme := &SQLSMExecutor{sm: sm}
+	god := sm.toSQLGod()
+	sme.SQLExecutor = *NewSQLExecutor(&god)
+	sme.child = *child
+	return sme
 }
 
 func (e *SQLSMExecutor) SaveResultToObject(targetObject interface{}) *SQLSMExecutor {
@@ -98,10 +111,6 @@ func (e *SQLSMExecutor) SaveColumnToObjectString(labelColumnName, valueColumnNam
 	return e
 }
 
-func (e *SQLSMExecutor) GetResultAsObject(elementType reflect.Type) interface{} {
-	panic("not implemented")
-}
-
 func (e *SQLSMExecutor) GetResultColumnAsObject(labelColumn, valueColumn int, elementType reflect.Type) interface{} {
 	return e.ExtractorResultSet(func(rs *sql.Rows) interface{} {
 		for rs.Next() {
@@ -120,28 +129,23 @@ func (e *SQLSMExecutor) GetResultColumnAsObjectString(labelColumn, valueColumn s
 	})
 }
 
+func (e *SQLSMExecutor) GetResultAsObject(elementType reflect.Type) interface{} {
+	return e.child.GetResultAsObject(elementType)
+}
 func (e *SQLSMExecutor) GetResultAsMap() map[string]interface{} {
-	panic("not implemented")
+	return e.child.GetResultAsMap()
 }
 
 func (e *SQLSMExecutor) GetResultAsList(elementType reflect.Type) []map[string]interface{} {
-	panic("not implemented")
+	return e.child.GetResultAsList(elementType)
 }
 
 func (e *SQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
-	rows, err := MYDB.Query("SELECT * FROM user u WHERE u.id = ?", 1)
-	if err != nil {
-		panic(err)
-	}
-	rse(rows)
-	result, err := MYDB.Exec("INSERT INTO users(id,name) VALUES(?,?)", 1, "test")
-	count, err := result.RowsAffected()
-	fmt.Printf("rows affected: %d\n", count)
-	// panic("not implemented")
+	return e.child.ExtractorResultSet(rse)
 }
 
 func (e *SQLSMExecutor) Count() int64 {
-	panic("not implemented")
+	return e.child.Count()
 }
 
 func (e *SQLSMExecutor) GetResultAsListByPage(pageNumber, pageSize, totalNumber int, elementType reflect.Type) PageDataBean {

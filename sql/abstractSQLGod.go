@@ -22,14 +22,14 @@ type AbstractSQLGodChild interface {
 	_countSQL(sb *strings.Builder)
 }
 
-func NewAbstractSQLGod(child AbstractSQLGodChild) *AbstractSQLGod {
+func NewAbstractSQLGod(child *AbstractSQLGodChild) *AbstractSQLGod {
 	agod := &AbstractSQLGod{
 		log:          log.Default(),
 		logSql:       true,
 		args:         make([]interface{}, 0),
 		hasSubSelect: false,
 	}
-	agod.child = child
+	agod.child = *child
 	return agod
 }
 
@@ -118,6 +118,10 @@ func (g *AbstractSQLGod) flat(args []interface{}, result *[]interface{}) {
 			g.flat(o.([]interface{}), result)
 		}
 	}
+}
+
+func (g *AbstractSQLGod) toSQLGod() SQLGod {
+	return g
 }
 
 // A struct for binding SQLSM objects to aliases
