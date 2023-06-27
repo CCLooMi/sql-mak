@@ -1,4 +1,4 @@
-package sql
+package god
 
 import "database/sql"
 

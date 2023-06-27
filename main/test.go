@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"sql-mak/sql"
+	"sql-mak/sql/god"
 )
 
 func main() {
-	sm := sql.NewSQLSM()
-
-	fmt.Println(sm.SELECT("*").FROM("users", "u").WHERE("u.id=?", 110).Sql())
-
+	sm := god.NewSQLSM()
+	sm.SELECT("*").FROM("users", "u").WHERE("u.id=?", 110).LOGSQL(true).Sql()
 }

@@ -1,4 +1,4 @@
-package sql
+package god
 
 import (
 	"fmt"
@@ -428,7 +428,7 @@ func (s *SQLSM) ExpSQL() string {
 
 func (s *SQLSM) Execute() SQLSMExecutor {
 	god := s.toSQLGod()
-	executor, _ := GetExecutor(&god, reflect.TypeOf(SQLSMExecutor{})).(SQLSMExecutor)
+	executor, _ := GetExecutor(god, reflect.TypeOf(SQLSMExecutor{})).(SQLSMExecutor)
 	return executor
 }
 
@@ -475,7 +475,7 @@ func (s *SQLSM) _sql(sb *strings.Builder) {
 				sb.WriteRune(')')
 				sb.WriteString(tv.alias)
 			}
-			if i != len(s.tables) {
+			if i != len(s.tables)-1 {
 				sb.WriteRune(',')
 			}
 		}
@@ -518,7 +518,7 @@ func (s *SQLSM) _sql(sb *strings.Builder) {
 		sb.WriteString("GROUP BY ")
 		for i, gb := range s.groupBy {
 			sb.WriteString(gb)
-			if i != len(s.groupBy) {
+			if i != len(s.groupBy)-1 {
 				sb.WriteRune(',')
 			}
 		}
@@ -528,7 +528,7 @@ func (s *SQLSM) _sql(sb *strings.Builder) {
 		sb.WriteString("ORDER BY ")
 		for i, ob := range s.orderBy {
 			sb.WriteString(ob)
-			if i != len(s.orderBy) {
+			if i != len(s.orderBy)-1 {
 				sb.WriteRune(',')
 			}
 		}

@@ -1,9 +1,10 @@
-package sql
+package god
 
 import (
 	"log"
 	"reflect"
 	"strings"
+	"unsafe"
 )
 
 type AbstractSQLGod struct {
@@ -51,7 +52,7 @@ func (g *AbstractSQLGod) TableName(t reflect.Type) string {
 	return name
 }
 
-func (g *AbstractSQLGod) IF(condition bool, fs ...func(g SQLGod)) SQLGod {
+func (g *AbstractSQLGod) IF(condition bool, fs ...func(g *AbstractSQLGod)) *AbstractSQLGod {
 	if len(fs) == 0 {
 		return g
 	}
@@ -65,7 +66,7 @@ func (g *AbstractSQLGod) IF(condition bool, fs ...func(g SQLGod)) SQLGod {
 	return g
 }
 
-func (g *AbstractSQLGod) SWITCH(i int, fs ...func(g SQLGod)) SQLGod {
+func (g *AbstractSQLGod) SWITCH(i int, fs ...func(g *AbstractSQLGod)) *AbstractSQLGod {
 	if i < 0 || i > len(fs)-1 {
 		return g
 	}
@@ -73,7 +74,7 @@ func (g *AbstractSQLGod) SWITCH(i int, fs ...func(g SQLGod)) SQLGod {
 	return g
 }
 
-func (g *AbstractSQLGod) LOGSQL(b bool) SQLGod {
+func (g *AbstractSQLGod) LOGSQL(b bool) *AbstractSQLGod {
 	g.logSql = b
 	return g
 }
@@ -120,8 +121,8 @@ func (g *AbstractSQLGod) flat(args []interface{}, result *[]interface{}) {
 	}
 }
 
-func (g *AbstractSQLGod) toSQLGod() SQLGod {
-	return g
+func (g *AbstractSQLGod) toSQLGod() *SQLGod {
+	return (*SQLGod)(unsafe.Pointer(g))
 }
 
 // A struct for binding SQLSM objects to aliases

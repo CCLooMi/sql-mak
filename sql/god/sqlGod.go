@@ -1,4 +1,4 @@
-package sql
+package god
 
 type SQLGod interface {
 	Sql() string
