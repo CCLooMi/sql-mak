@@ -426,10 +426,10 @@ func (s *SQLSM) ExpSQL() string {
 	return sb.String()
 }
 
-func (s *SQLSM) Execute() SQLSMExecutor {
+func (s *SQLSM) Execute() *SQLSMExecutor {
 	god := s.toSQLGod()
 	executor, _ := GetExecutor(god, reflect.TypeOf(SQLSMExecutor{})).(SQLSMExecutor)
-	return executor
+	return &executor
 }
 
 func (s *SQLSM) _sql(sb *strings.Builder) {
