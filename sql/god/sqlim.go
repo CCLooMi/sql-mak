@@ -17,9 +17,15 @@ type SQLIM struct {
 }
 
 func NewSQLIM() *SQLIM {
-	return &SQLIM{
+	im := &SQLIM{
 		columns: make([]string, 0),
 	}
+	a := im.toAbstractSQLGodChild()
+	im.AbstractSQLGod = *NewAbstractSQLGod(&a)
+	return im
+}
+func (im *SQLIM) toAbstractSQLGodChild() AbstractSQLGodChild {
+	return im
 }
 func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {
 	switch t := table.(type) {

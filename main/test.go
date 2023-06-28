@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sql-mak/sql"
 	"sql-mak/sql/god"
 )
 
@@ -30,4 +31,11 @@ func main() {
 		LOGSQL(true).
 		Sql()
 
+	sql.SELECT("u.id", "u.name").FROM("users", "u").LOGSQL(true).Sql()
+	sql.
+		INSERT_INTO_TABLE("users").
+		INTO_COLUMNS("u.id", "u.name").
+		VALUES_SM(sm).
+		LOGSQL(true).
+		Sql()
 }
