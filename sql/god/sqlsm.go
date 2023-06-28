@@ -63,7 +63,7 @@ func (s *SQLSM) SELECT_AS(column, alias string) *SQLSM {
 	return s
 }
 
-func (s *SQLSM) SELECT_AS_SM(column *SQLSM, alias string) *SQLSM {
+func (s *SQLSM) SELECT_SM(column *SQLSM, alias string) *SQLSM {
 	s.hasSubSelect = true
 	s.columns = append(s.columns, A{sm: column, alias: "'" + alias + "'"})
 	s.columnAlias = append(s.columnAlias, alias)
@@ -71,7 +71,7 @@ func (s *SQLSM) SELECT_AS_SM(column *SQLSM, alias string) *SQLSM {
 	return s
 }
 
-func (s *SQLSM) SELECT_AS_EXP(exp *EXP, alias string) *SQLSM {
+func (s *SQLSM) SELECT_EXP(exp *EXP, alias string) *SQLSM {
 	s.hasSubSelect = true
 	s.columns = append(s.columns, B{exp: exp, alias: "'" + alias + "'"})
 	s.columnAlias = append(s.columnAlias, alias)
