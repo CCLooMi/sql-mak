@@ -1,8 +1,8 @@
 package main
 
 import (
-	"sql-mak/sql"
-	"sql-mak/sql/god"
+	"sql-mak/mysql"
+	"sql-mak/mysql/god"
 )
 
 func main() {
@@ -31,8 +31,8 @@ func main() {
 		LOGSQL(true).
 		Sql()
 
-	sql.SELECT("u.id", "u.name").FROM("users", "u").LOGSQL(true).Sql()
-	sql.
+	mysql.SELECT("u.id", "u.name").FROM("users", "u").LOGSQL(true).Sql()
+	mysql.
 		INSERT_INTO_TABLE("users").
 		INTO_COLUMNS("u.id", "u.name").
 		VALUES_SM(sm).

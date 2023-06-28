@@ -1,9 +1,9 @@
-package sql
+package mysql
 
 import (
 	"database/sql"
 	"reflect"
-	"sql-mak/sql/god"
+	"sql-mak/mysql/god"
 )
 
 // import "reflect"
