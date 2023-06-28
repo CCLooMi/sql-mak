@@ -9,14 +9,15 @@ import (
 
 type SQLSMExecutor struct {
 	SQLExecutor
-	sm    *SQLSM
+	SM    *SQLSM
 	child SQLSMExecutorChild
 }
 
 type SQLSMExecutorChild interface {
-	GetResultAsObject(elementType reflect.Type) interface{}
+	GetResultAsStruct(elementType reflect.Type) interface{}
 	GetResultAsMap() map[string]interface{}
-	GetResultAsList(elementType reflect.Type) []map[string]interface{}
+	GetResultAsMapList() []map[string]interface{}
+	GetResultAsStructList(elementType reflect.Type) []interface{}
 	ExtractorResultSet(rse ResultSetExtractor) interface{}
 	Count() int64
 }
@@ -37,7 +38,7 @@ type ByPageFilter interface {
 }
 
 func NewSQLSMExecutor(sm *SQLSM, child *SQLSMExecutorChild) *SQLSMExecutor {
-	sme := &SQLSMExecutor{sm: sm}
+	sme := &SQLSMExecutor{SM: sm}
 	god := sm.toSQLGod()
 	sme.SQLExecutor = *NewSQLExecutor(god)
 	sme.child = *child
@@ -47,9 +48,9 @@ func NewSQLSMExecutor(sm *SQLSM, child *SQLSMExecutorChild) *SQLSMExecutor {
 func (e *SQLSMExecutor) SaveResultToObject(targetObject interface{}) *SQLSMExecutor {
 	e.ExtractorResultSet(func(rs *sql.Rows) interface{} {
 		if m, ok := targetObject.(map[string]interface{}); ok {
-			RowsToMap(rs, m)
+			e.RowsToMap(rs, m)
 		} else {
-			RowsToStruct(rs, targetObject)
+			e.RowsToStruct(rs, targetObject)
 		}
 		return nil
 	})
@@ -129,15 +130,18 @@ func (e *SQLSMExecutor) GetResultColumnAsObjectString(labelColumn, valueColumn s
 	})
 }
 
-func (e *SQLSMExecutor) GetResultAsObject(elementType reflect.Type) interface{} {
-	return e.child.GetResultAsObject(elementType)
+func (e *SQLSMExecutor) GetResultAsStruct(elementType reflect.Type) interface{} {
+	return e.child.GetResultAsStruct(elementType)
 }
 func (e *SQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	return e.child.GetResultAsMap()
 }
 
-func (e *SQLSMExecutor) GetResultAsList(elementType reflect.Type) []map[string]interface{} {
-	return e.child.GetResultAsList(elementType)
+func (e *SQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
+	return e.child.GetResultAsMapList()
+}
+func (e *SQLSMExecutor) GetResultAsStructList(elementType reflect.Type) []interface{} {
+	return e.child.GetResultAsStructList(elementType)
 }
 
 func (e *SQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
@@ -158,8 +162,8 @@ func (e *SQLSMExecutor) GetResultAsListByPageWithFilter(pageNumber, pageSize, to
 	if page < 0 {
 		page = 0
 	}
-	pageSize = defaultIfNull(pageSize, 16).(int)
-	e.sm.LIMIT(page*pageSize, pageSize)
+	pageSize = e.DefaultIfNull(pageSize, 16).(int)
+	e.SM.LIMIT(page*pageSize, pageSize)
 
 	if page == 0 || totalNumber > -1 {
 		pageData.TotalNumber = e.Count()
@@ -178,9 +182,13 @@ func (e *SQLSMExecutor) GetResultAsListByPageWithFilter(pageNumber, pageSize, to
 			return ls
 		})
 	} else {
-		pageData.Data = e.GetResultAsList(elementType)
+		switch elementType.Kind() {
+		case reflect.Map:
+			pageData.Data = e.GetResultAsMap()
+		case reflect.Struct:
+			pageData.Data = e.GetResultAsStruct(elementType)
+		}
 	}
-
 	return pageData
 }
 
@@ -269,7 +277,7 @@ func (e *SQLSMExecutor) ResultSetColumnToElementTypeString(columnLabel, columnVa
 
 func (e *SQLSMExecutor) SetObjectFieldValue(targetObject interface{}, fieldName string, value interface{}) {
 	v := reflect.ValueOf(targetObject).Elem()
-	f := e.getClassField(v.Type(), fieldName)
+	f := e.GetClassField(v.Type(), fieldName)
 	if f.IsValid() {
 		if value != nil {
 			// is it need to convert value to f.Type() ?
@@ -278,26 +286,26 @@ func (e *SQLSMExecutor) SetObjectFieldValue(targetObject interface{}, fieldName 
 	}
 }
 
-func (e *SQLSMExecutor) getClassField(c reflect.Type, fieldName string) reflect.Value {
+func (e *SQLSMExecutor) GetClassField(c reflect.Type, fieldName string) reflect.Value {
 	if c == nil || fieldName == "" {
 		return reflect.Value{}
 	}
 	f, ok := c.FieldByName(fieldName)
 	if !ok {
-		return e.getClassField(c.Field(0).Type, fieldName)
+		return e.GetClassField(c.Field(0).Type, fieldName)
 	}
 	return reflect.ValueOf(&f).Elem()
 }
 
-func defaultIfNull(value, defaultValue interface{}) interface{} {
+func (e *SQLSMExecutor) DefaultIfNull(value, defaultValue interface{}) interface{} {
 	if value == nil {
 		return defaultValue
 	}
 	return value
 }
 
-func RowsToMap(rs *sql.Rows, m map[string]interface{}) error {
-	columns, _ := rs.Columns()
+func (e *SQLSMExecutor) RowsToMap(rows *sql.Rows, m map[string]interface{}) error {
+	columns, _ := rows.Columns()
 	if len(columns) == 0 {
 		return nil
 	}
@@ -306,8 +314,9 @@ func RowsToMap(rs *sql.Rows, m map[string]interface{}) error {
 		var val interface{}
 		values[i] = &val
 	}
-	for rs.Next() {
-		err := rs.Scan(values...)
+	defer rows.Close() // finally close rows
+	for rows.Next() {
+		err := rows.Scan(values...)
 		if err != nil {
 			return err
 		}
@@ -320,7 +329,7 @@ func RowsToMap(rs *sql.Rows, m map[string]interface{}) error {
 }
 
 // RowsToMaps converts sql.Rows to a slice of maps
-func RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, error) {
+func (e *SQLSMExecutor) RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, error) {
 	// Get column names
 	columns, err := rows.Columns()
 	if err != nil {
@@ -337,6 +346,7 @@ func RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, error) {
 	// Create slice of maps to hold result
 	maps := make([]map[string]interface{}, 0)
 
+	defer rows.Close() // finally close rows
 	// Iterate over rows
 	for rows.Next() {
 		// Scan row values into slice
@@ -361,9 +371,9 @@ func RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, error) {
 	return maps, nil
 }
 
-func RowsToStruct(rs *sql.Rows, v interface{}) error {
+func (e *SQLSMExecutor) RowsToStruct(rows *sql.Rows, v interface{}) error {
 	// Get column names
-	columns, err := rs.Columns()
+	columns, err := rows.Columns()
 	if err != nil {
 		return err
 	}
@@ -375,10 +385,11 @@ func RowsToStruct(rs *sql.Rows, v interface{}) error {
 		values[i] = &val
 	}
 	vv := reflect.ValueOf(v)
+	defer rows.Close() // finally close rows
 	// Iterate over rows
-	for rs.Next() {
+	for rows.Next() {
 		// Scan row values into slice
-		err := rs.Scan(values...)
+		err := rows.Scan(values...)
 		if err != nil {
 			return err
 		}
@@ -401,7 +412,7 @@ func RowsToStruct(rs *sql.Rows, v interface{}) error {
 }
 
 // RowsToStructs converts sql.Rows to a slice of structs
-func RowsToStructs(rows *sql.Rows, v interface{}) error {
+func (e *SQLSMExecutor) RowsToStructs(rows *sql.Rows, v interface{}) error {
 	// Get value of slice
 	sliceVal := reflect.ValueOf(v).Elem()
 
@@ -421,6 +432,7 @@ func RowsToStructs(rows *sql.Rows, v interface{}) error {
 		values[i] = &val
 	}
 
+	defer rows.Close() // finally close rows
 	// Iterate over rows
 	for rows.Next() {
 		// Create struct instance

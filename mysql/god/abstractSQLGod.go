@@ -9,7 +9,7 @@ import (
 
 type AbstractSQLGod struct {
 	SQLGod
-	log          *log.Logger
+	Log          *log.Logger
 	logSql       bool
 	args         []interface{}
 	batchArgs    [][]interface{}
@@ -25,7 +25,7 @@ type AbstractSQLGodChild interface {
 
 func NewAbstractSQLGod(child *AbstractSQLGodChild) *AbstractSQLGod {
 	agod := &AbstractSQLGod{
-		log:          log.Default(),
+		Log:          log.Default(),
 		logSql:       true,
 		args:         make([]interface{}, 0),
 		hasSubSelect: false,
@@ -83,7 +83,7 @@ func (g *AbstractSQLGod) Sql() string {
 	var sb strings.Builder
 	g.child._sql(&sb)
 	if g.logSql {
-		g.log.Println("sql:", sb.String(), g.args)
+		g.Log.Println("sql:", sb.String(), g.args)
 	}
 	return sb.String()
 }
@@ -92,7 +92,7 @@ func (g *AbstractSQLGod) CountSql() string {
 	var sb strings.Builder
 	g.child._countSQL(&sb)
 	if g.logSql {
-		g.log.Println("sql:", sb.String(), g.args)
+		g.Log.Println("sql:", sb.String(), g.args)
 	}
 	return sb.String()
 }

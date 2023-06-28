@@ -4,17 +4,14 @@ import (
 	"database/sql"
 	"reflect"
 	"sql-mak/mysql/god"
+
+	_ "github.com/go-sql-driver/mysql"
 )
-
-// import "reflect"
-
-type SQL struct {
-}
 
 var MYDB *sql.DB
 
 func init() {
-	_db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test")
+	_db, err := sql.Open("mysql", "root:apple@tcp(127.0.0.1:3308)/wios")
 	if err != nil {
 		panic(err)
 	}

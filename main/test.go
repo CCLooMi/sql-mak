@@ -1,11 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"sql-mak/mysql"
 	"sql-mak/mysql/god"
 )
 
 func main() {
+	r := mysql.
+		SELECT("*").
+		FROM("users", "u").
+		Execute().
+		GetResultAsMapList()
+	fmt.Printf("%s\n", r)
+}
+
+func sqlTest() {
 	sm := god.NewSQLSM()
 	sm.SELECT("*").
 		FROM("users", "u").

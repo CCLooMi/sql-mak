@@ -7,15 +7,15 @@ import (
 )
 
 type SQLExecutor struct {
-	log *logrus.Entry
-	god *SQLGod
+	Log *logrus.Entry
+	God *SQLGod
 }
 
 type ResultSetExtractor func(rs *sql.Rows) interface{}
 
 func NewSQLExecutor(god *SQLGod) *SQLExecutor {
 	return &SQLExecutor{
-		log: logrus.WithField("component", "SQLExecutor"),
-		god: god,
+		Log: logrus.WithField("component", "SQLExecutor"),
+		God: god,
 	}
 }
