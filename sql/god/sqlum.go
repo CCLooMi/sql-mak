@@ -151,7 +151,9 @@ func (sm *SQLUM) WHERE_IN(column string, inOrNotIn string, args ...interface{}) 
 			sm.args = append(sm.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
+				continue
 			}
+			sb.WriteRune('?')
 		}
 		sb.WriteString(")")
 		sm.where = sb.String()
@@ -167,7 +169,9 @@ func (sm *SQLUM) AND_IN(column string, inOrNotIn string, args ...interface{}) *S
 			sm.args = append(sm.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
+				continue
 			}
+			sb.WriteRune('?')
 		}
 		sb.WriteString(")")
 		if sm.andor == nil {
@@ -186,7 +190,9 @@ func (sm *SQLUM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQ
 			sm.args = append(sm.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
+				continue
 			}
+			sb.WriteRune('?')
 		}
 		sb.WriteString(")")
 		if sm.andor == nil {

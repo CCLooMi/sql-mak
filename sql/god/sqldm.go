@@ -8,7 +8,6 @@ import (
 type SQLDM struct {
 	AbstractSQLGod
 	AbstractSQLGodChild
-	SQLUMExecutor
 	table string
 	where string
 	andor []string
@@ -20,7 +19,6 @@ func NewSQLDM() *SQLDM {
 	}
 	a := dm.toAbstractSQLGodChild()
 	dm.AbstractSQLGod = *NewAbstractSQLGod(&a)
-	dm.SQLUMExecutor = *NewSQLUMExecutor(dm.toSQLGod())
 	return dm
 }
 
@@ -70,7 +68,9 @@ func (dm *SQLDM) WHERE_IN(column string, args ...interface{}) *SQLDM {
 			dm.args = append(dm.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
+				continue
 			}
+			sb.WriteRune('?')
 		}
 		sb.WriteByte(')')
 		dm.where = sb.String()
@@ -88,7 +88,9 @@ func (dm *SQLDM) AND_IN(column string, args ...interface{}) *SQLDM {
 			dm.args = append(dm.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
+				continue
 			}
+			sb.WriteRune('?')
 		}
 		sb.WriteByte(')')
 		if dm.andor == nil {
@@ -109,7 +111,9 @@ func (dm *SQLDM) OR_IN(column string, args ...interface{}) *SQLDM {
 			dm.args = append(dm.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
+				continue
 			}
+			sb.WriteRune('?')
 		}
 		sb.WriteByte(')')
 		if dm.andor == nil {
