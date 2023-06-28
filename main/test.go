@@ -22,4 +22,12 @@ func main() {
 		LOGSQL(true).
 		Sql()
 
+	um := god.NewSQLUM()
+	um.UPDATE("users", "u").
+		SET("u.name=?").
+		WHERE("u.id=?", 110).
+		AND("u.email=?", "cx@wios.com").
+		LOGSQL(true).
+		Sql()
+
 }

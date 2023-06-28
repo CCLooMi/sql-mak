@@ -1,17 +1,25 @@
 package god
 
 type SQLUMExecutor struct {
-	*SQLExecutor
+	SQLExecutor
+	child SQLUMExecutorChild
+}
+type SQLUMExecutorChild interface {
+	Update() int
+	BatchUpdate() []int
 }
 
-func NewSQLUMExecutor(god *SQLGod) *SQLUMExecutor {
-	return &SQLUMExecutor{SQLExecutor: NewSQLExecutor(god)}
+func NewSQLUMExecutor(god *SQLGod, child *SQLUMExecutorChild) *SQLUMExecutor {
+	exe := &SQLUMExecutor{}
+	exe.SQLExecutor = *NewSQLExecutor(god)
+	exe.child = *child
+	return exe
 }
 
 func (exe *SQLUMExecutor) Update() int {
-	return 0 // TODO: implement
+	return exe.child.Update()
 }
 
 func (exe *SQLUMExecutor) BatchUpdate() []int {
-	return nil // TODO: implement
+	return exe.child.BatchUpdate()
 }
