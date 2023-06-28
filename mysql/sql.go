@@ -14,11 +14,14 @@ type SQL struct {
 var MYDB *sql.DB
 
 func init() {
-	// _db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/test")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// MYDB = _db
+	_db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test")
+	if err != nil {
+		panic(err)
+	}
+	MYDB = _db
+
+	MYDB.SetMaxOpenConns(10)
+	MYDB.SetMaxIdleConns(5)
 }
 
 func SELECT(columns ...interface{}) *god.SQLSM {
