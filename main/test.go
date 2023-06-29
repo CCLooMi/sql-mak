@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	god.RegisterExecutorProvider("sm", reflect.ValueOf(base.NewMySQLSMExecutor))
 
 	r := mysql.

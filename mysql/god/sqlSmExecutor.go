@@ -9,6 +9,7 @@ import (
 
 type SQLSMExecutor struct {
 	SQLExecutor
+	SQLSMExecutorChild
 	SM    *SQLSM
 	child SQLSMExecutorChild
 }
@@ -38,6 +39,9 @@ type ByPageFilter interface {
 }
 
 func NewSQLSMExecutor(sm *SQLSM, child *SQLSMExecutorChild) *SQLSMExecutor {
+	// if *child == nil {
+	// 	panic("child is nil")
+	// }
 	sme := &SQLSMExecutor{SM: sm}
 	god := sm.toSQLGod()
 	sme.SQLExecutor = *NewSQLExecutor(god)

@@ -21,6 +21,15 @@ func NewMySQLSMExecutor(sm *god.SQLSM) *MySQLSMExecutor {
 func (exe *MySQLSMExecutor) toSQLSMExecutorChild() *god.SQLSMExecutorChild {
 	return (*god.SQLSMExecutorChild)(unsafe.Pointer(exe))
 }
+
+func (exe *MySQLSMExecutor) ExtractorResultSet(rse *god.ResultSetExtractor) interface{} {
+	sm := exe.SM
+	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
+	if err != nil {
+		panic(err)
+	}
+	return (*rse)(rows)
+}
 func (exe *MySQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
