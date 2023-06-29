@@ -86,10 +86,11 @@ func (im *SQLIM) BatchArgs(batchArgs ...[]interface{}) *SQLIM {
 	im.batchArgs = append(im.batchArgs, batchArgs...)
 	return im
 }
-func (sm *SQLIM) Execute() *SQLIMExecutor {
-	god := sm.toSQLGod()
-	executor, _ := GetExecutor(god, reflect.TypeOf(SQLIMExecutor{})).(SQLIMExecutor)
-	return &executor
+func (im *SQLIM) Execute() *SQLIMExecutor {
+	// god := im.toSQLGod()
+	// executor, _ := GetExecutor("im").(SQLIMExecutor)
+	// return &executor
+	return nil
 }
 
 func (im *SQLIM) _sql(sb *strings.Builder) {

@@ -131,9 +131,12 @@ func (dm *SQLDM) BatchArgs(batchArgs ...[]interface{}) *SQLDM {
 	return dm
 }
 func (dm *SQLDM) Execute() *SQLDMExecutor {
-	god := dm.toSQLGod()
-	executor, _ := GetExecutor(god, reflect.TypeOf(SQLDMExecutor{})).(SQLDMExecutor)
-	return &executor
+	// god := dm.toSQLGod()
+	// exeType := GetExecutor("dm")
+	// reflect.New(exeType)
+	// executor, _ := GetExecutor("dm").(SQLDMExecutor)
+	// return &executor
+	return nil
 }
 
 func (dm *SQLDM) _sql(sb *strings.Builder) {

@@ -7,18 +7,16 @@ import (
 type SQLExecutorFactory struct {
 }
 
-var executorProviders map[reflect.Type]reflect.Type = make(map[reflect.Type]reflect.Type)
+var executorProviders map[string]reflect.Value = make(map[string]reflect.Value)
 
-func RegisterExecutorProvider(executorType, providerType reflect.Type) {
-	executorProviders[executorType] = providerType
+func RegisterExecutorProvider(name string, providerValue reflect.Value) {
+	executorProviders[name] = providerValue
 }
 
-func GetExecutor(god *SQLGod, executorType reflect.Type) interface{} {
-	providerType, ok := executorProviders[executorType]
+func GetExecutor(name string) *reflect.Value {
+	providerValue, ok := executorProviders[name]
 	if ok {
-		provider := reflect.New(providerType)
-		provider.FieldByName("god").Set(reflect.ValueOf(god))
-		return provider
+		return &providerValue
 	}
 	return nil
 }

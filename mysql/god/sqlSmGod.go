@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"unsafe"
 )
 
 type SQLSM struct {
@@ -427,9 +428,12 @@ func (s *SQLSM) ExpSQL() string {
 }
 
 func (s *SQLSM) Execute() *SQLSMExecutor {
-	god := s.toSQLGod()
-	executor, _ := GetExecutor(god, reflect.TypeOf(SQLSMExecutor{})).(SQLSMExecutor)
-	return &executor
+	method := GetExecutor("sm")
+	if method.IsValid() {
+		exe := method.Call([]reflect.Value{reflect.ValueOf(s)})[0].Interface()
+		return (*SQLSMExecutor)(unsafe.Pointer(&exe))
+	}
+	return nil
 }
 
 func (s *SQLSM) _sql(sb *strings.Builder) {

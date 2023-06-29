@@ -236,9 +236,10 @@ func (sm *SQLUM) SetBatchArgs(batchArgs [][]interface{}) *SQLUM {
 }
 
 func (sm *SQLUM) Execute() *SQLUMExecutor {
-	god := sm.toSQLGod()
-	executor, _ := GetExecutor(god, reflect.TypeOf(SQLUMExecutor{})).(SQLUMExecutor)
-	return &executor
+	// god := sm.toSQLGod()
+	// executor, _ := GetExecutor("um").(SQLUMExecutor)
+	// return &executor
+	return nil
 }
 func (sm *SQLUM) _sql(sb *strings.Builder) {
 	sb.WriteString("UPDATE ")
