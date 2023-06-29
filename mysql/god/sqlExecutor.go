@@ -8,12 +8,12 @@ import (
 
 type SQLExecutor struct {
 	Log *logrus.Entry
-	God *SQLGod
+	God SQLGod
 }
 
 type ResultSetExtractor func(rs *sql.Rows) interface{}
 
-func NewSQLExecutor(god *SQLGod) *SQLExecutor {
+func NewSQLExecutor(god SQLGod) *SQLExecutor {
 	return &SQLExecutor{
 		Log: logrus.WithField("component", "SQLExecutor"),
 		God: god,

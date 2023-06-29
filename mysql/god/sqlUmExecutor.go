@@ -9,7 +9,7 @@ type SQLUMExecutorChild interface {
 	BatchUpdate() []int
 }
 
-func NewSQLUMExecutor(god *SQLGod, child *SQLUMExecutorChild) *SQLUMExecutor {
+func NewSQLUMExecutor(god SQLGod, child *SQLUMExecutorChild) *SQLUMExecutor {
 	exe := &SQLUMExecutor{}
 	exe.SQLExecutor = *NewSQLExecutor(god)
 	exe.child = *child

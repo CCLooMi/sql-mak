@@ -1,26 +1,24 @@
 package god
 
 import (
+	"database/sql"
 	"fmt"
 	"reflect"
-
-	"database/sql"
 )
 
 type SQLSMExecutor struct {
 	SQLExecutor
-	SQLSMExecutorChild
 	SM    *SQLSM
 	child SQLSMExecutorChild
 }
 
 type SQLSMExecutorChild interface {
-	GetResultAsStruct(elementType reflect.Type) interface{}
-	GetResultAsMap() map[string]interface{}
-	GetResultAsMapList() []map[string]interface{}
-	GetResultAsStructList(elementType reflect.Type) []interface{}
-	ExtractorResultSet(rse ResultSetExtractor) interface{}
-	Count() int64
+	_getResultAsStruct(elementType reflect.Type) interface{}
+	_getResultAsMap() map[string]interface{}
+	_getResultAsMapList() []map[string]interface{}
+	_getResultAsStructList(elementType reflect.Type) []interface{}
+	_extractorResultSet(rse ResultSetExtractor) interface{}
+	_count() int64
 }
 
 type PageDataBean struct {
@@ -38,14 +36,14 @@ type ByPageFilter interface {
 	DoFilter(rs *sql.Rows)
 }
 
-func NewSQLSMExecutor(sm *SQLSM, child *SQLSMExecutorChild) *SQLSMExecutor {
+func NewSQLSMExecutor(sm *SQLSM, child SQLSMExecutorChild) *SQLSMExecutor {
 	// if *child == nil {
 	// 	panic("child is nil")
 	// }
 	sme := &SQLSMExecutor{SM: sm}
 	god := sm.toSQLGod()
 	sme.SQLExecutor = *NewSQLExecutor(god)
-	sme.child = *child
+	sme.child = child
 	return sme
 }
 
@@ -134,26 +132,26 @@ func (e *SQLSMExecutor) GetResultColumnAsObjectString(labelColumn, valueColumn s
 	})
 }
 
-func (e *SQLSMExecutor) GetResultAsStruct(elementType reflect.Type) interface{} {
-	return e.child.GetResultAsStruct(elementType)
+func (e *SQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
+	return e.child._getResultAsStruct(c)
 }
 func (e *SQLSMExecutor) GetResultAsMap() map[string]interface{} {
-	return e.child.GetResultAsMap()
+	return e.child._getResultAsMap()
 }
 
 func (e *SQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
-	return e.child.GetResultAsMapList()
+	return e.child._getResultAsMapList()
 }
-func (e *SQLSMExecutor) GetResultAsStructList(elementType reflect.Type) []interface{} {
-	return e.child.GetResultAsStructList(elementType)
+func (e *SQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} {
+	return e.child._getResultAsStructList(c)
 }
 
 func (e *SQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
-	return e.child.ExtractorResultSet(rse)
+	return e.child._extractorResultSet(rse)
 }
 
 func (e *SQLSMExecutor) Count() int64 {
-	return e.child.Count()
+	return e.child._count()
 }
 
 func (e *SQLSMExecutor) GetResultAsListByPage(pageNumber, pageSize, totalNumber int, elementType reflect.Type) PageDataBean {

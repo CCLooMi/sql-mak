@@ -4,7 +4,6 @@ import (
 	"log"
 	"reflect"
 	"strings"
-	"unsafe"
 )
 
 type AbstractSQLGod struct {
@@ -121,8 +120,9 @@ func (g *AbstractSQLGod) flat(args []interface{}, result *[]interface{}) {
 	}
 }
 
-func (g *AbstractSQLGod) toSQLGod() *SQLGod {
-	return (*SQLGod)(unsafe.Pointer(g))
+func (g *AbstractSQLGod) toSQLGod() SQLGod {
+	// return (*SQLGod)(unsafe.Pointer(g))
+	return g
 }
 
 // A struct for binding SQLSM objects to aliases

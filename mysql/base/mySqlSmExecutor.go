@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"sql-mak/mysql"
 	"sql-mak/mysql/god"
-	"unsafe"
 )
 
 type MySQLSMExecutor struct {
@@ -18,11 +17,11 @@ func NewMySQLSMExecutor(sm *god.SQLSM) *MySQLSMExecutor {
 	return exe
 }
 
-func (exe *MySQLSMExecutor) toSQLSMExecutorChild() *god.SQLSMExecutorChild {
-	return (*god.SQLSMExecutorChild)(unsafe.Pointer(exe))
+func (exe *MySQLSMExecutor) toSQLSMExecutorChild() god.SQLSMExecutorChild {
+	return exe
 }
 
-func (exe *MySQLSMExecutor) ExtractorResultSet(rse *god.ResultSetExtractor) interface{} {
+func (exe *MySQLSMExecutor) INSERT_INTO_TABLExtractorResultSet(rse *god.ResultSetExtractor) interface{} {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
 	if err != nil {
@@ -30,7 +29,7 @@ func (exe *MySQLSMExecutor) ExtractorResultSet(rse *god.ResultSetExtractor) inte
 	}
 	return (*rse)(rows)
 }
-func (exe *MySQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
+func (exe *MySQLSMExecutor) _getResultAsStruct(c reflect.Type) interface{} {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
 	if err != nil {
@@ -40,7 +39,7 @@ func (exe *MySQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
 	exe.RowsToStruct(rows, instance)
 	return instance
 }
-func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
+func (exe *MySQLSMExecutor) _getResultAsMap() map[string]interface{} {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
 	if err != nil {
@@ -50,7 +49,7 @@ func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	exe.RowsToMap(rows, m)
 	return m
 }
-func (exe *MySQLSMExecutor) GetResultAsMapList(c reflect.Type) []map[string]interface{} {
+func (exe *MySQLSMExecutor) _getResultAsMapList(c reflect.Type) []map[string]interface{} {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
 	if err != nil {
@@ -62,7 +61,7 @@ func (exe *MySQLSMExecutor) GetResultAsMapList(c reflect.Type) []map[string]inte
 	}
 	return list
 }
-func (exe *MySQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} {
+func (exe *MySQLSMExecutor) _getResultAsStructList(c reflect.Type) []interface{} {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
 	if err != nil {
@@ -77,7 +76,7 @@ func (exe *MySQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} 
 	return list.Interface().([]interface{})
 }
 
-func (exe *MySQLSMExecutor) Count() int64 {
+func (exe *MySQLSMExecutor) _count() int64 {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.CountSql(), sm.Args()...)
 	if err != nil {

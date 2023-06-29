@@ -15,7 +15,7 @@ type SQLIMExecutorChild interface {
 	UpdateAndGetGeneratedKey() *sql.Result
 }
 
-func NewSQLIMExecutor(god *SQLGod, child *SQLIMExecutorChild) *SQLIMExecutor {
+func NewSQLIMExecutor(god SQLGod, child *SQLIMExecutorChild) *SQLIMExecutor {
 	exe := &SQLIMExecutor{}
 	exe.SQLUMExecutor = *NewSQLUMExecutor(god, exe.toSQLUMExecutorChild())
 	exe.child = *child
