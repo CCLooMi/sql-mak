@@ -13,10 +13,10 @@ type SQLSMExecutor struct {
 }
 
 type SQLSMExecutorChild interface {
-	_getResultAsStruct(elementType reflect.Type) interface{}
+	_getResultAsStruct(c reflect.Type) interface{}
 	_getResultAsMap() map[string]interface{}
 	_getResultAsMapList() []map[string]interface{}
-	_getResultAsStructList(elementType reflect.Type) []interface{}
+	_getResultAsStructList(c reflect.Type) []interface{}
 	_extractorResultSet(rse ResultSetExtractor) interface{}
 	_count() int64
 }

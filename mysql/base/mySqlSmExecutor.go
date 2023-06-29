@@ -21,13 +21,13 @@ func (exe *MySQLSMExecutor) toSQLSMExecutorChild() god.SQLSMExecutorChild {
 	return exe
 }
 
-func (exe *MySQLSMExecutor) INSERT_INTO_TABLExtractorResultSet(rse *god.ResultSetExtractor) interface{} {
+func (exe *MySQLSMExecutor) INSERT_INTO_TABLExtractorResultSet(rse god.ResultSetExtractor) interface{} {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
 	if err != nil {
 		panic(err)
 	}
-	return (*rse)(rows)
+	return rse(rows)
 }
 func (exe *MySQLSMExecutor) _getResultAsStruct(c reflect.Type) interface{} {
 	sm := exe.SM
@@ -75,7 +75,14 @@ func (exe *MySQLSMExecutor) _getResultAsStructList(c reflect.Type) []interface{}
 	}
 	return list.Interface().([]interface{})
 }
-
+func (exe *MySQLSMExecutor) _extractorResultSet(rse god.ResultSetExtractor) interface{} {
+	sm := exe.SM
+	rows, err := mysql.MYDB.Query(sm.Sql(), sm.Args()...)
+	if err != nil {
+		panic(err)
+	}
+	return rse(rows)
+}
 func (exe *MySQLSMExecutor) _count() int64 {
 	sm := exe.SM
 	rows, err := mysql.MYDB.Query(sm.CountSql(), sm.Args()...)
