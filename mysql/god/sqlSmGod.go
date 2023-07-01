@@ -1,10 +1,10 @@
 package god
 
 import (
+	"database/sql"
 	"fmt"
 	"reflect"
 	"strings"
-	"unsafe"
 )
 
 type SQLSM struct {
@@ -427,13 +427,8 @@ func (s *SQLSM) ExpSQL() string {
 	return sb.String()
 }
 
-func (s *SQLSM) Execute() *SQLSMExecutor {
-	method := GetExecutor("sm")
-	if method.IsValid() {
-		exe := method.Call([]reflect.Value{reflect.ValueOf(s)})[0].Interface()
-		return (*SQLSMExecutor)(unsafe.Pointer(&exe))
-	}
-	return nil
+func (s *SQLSM) Execute(mdb *sql.DB) *MySQLSMExecutor {
+	return NewMySQLSMExecutor(s, mdb)
 }
 
 func (s *SQLSM) _sql(sb *strings.Builder) {

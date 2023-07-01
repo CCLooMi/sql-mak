@@ -2,19 +2,15 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"sql-mak/mysql"
-	"sql-mak/mysql/base"
 	"sql-mak/mysql/god"
 )
 
 func main() {
-	god.RegisterExecutorProvider("sm", reflect.ValueOf(base.NewMySQLSMExecutor))
-
 	r := mysql.
 		SELECT("*").
 		FROM("users", "u").
-		Execute().
+		Execute(mysql.MYDB).
 		GetResultAsMapList()
 	fmt.Printf("%s\n", r)
 }

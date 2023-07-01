@@ -8,17 +8,18 @@ import (
 
 type SQLSMExecutor struct {
 	SQLExecutor
+	SQLSMExecutorChild
 	SM    *SQLSM
 	child SQLSMExecutorChild
 }
 
 type SQLSMExecutorChild interface {
-	_getResultAsStruct(c reflect.Type) interface{}
-	_getResultAsMap() map[string]interface{}
-	_getResultAsMapList() []map[string]interface{}
-	_getResultAsStructList(c reflect.Type) []interface{}
-	_extractorResultSet(rse ResultSetExtractor) interface{}
-	_count() int64
+	GetResultAsStruct(c reflect.Type) interface{}
+	GetResultAsMap() map[string]interface{}
+	GetResultAsMapList() []map[string]interface{}
+	GetResultAsStructList(c reflect.Type) []interface{}
+	ExtractorResultSet(rse ResultSetExtractor) interface{}
+	Count() int64
 }
 
 type PageDataBean struct {
@@ -37,9 +38,6 @@ type ByPageFilter interface {
 }
 
 func NewSQLSMExecutor(sm *SQLSM, child SQLSMExecutorChild) *SQLSMExecutor {
-	// if *child == nil {
-	// 	panic("child is nil")
-	// }
 	sme := &SQLSMExecutor{SM: sm}
 	god := sm.toSQLGod()
 	sme.SQLExecutor = *NewSQLExecutor(god)
@@ -133,25 +131,25 @@ func (e *SQLSMExecutor) GetResultColumnAsObjectString(labelColumn, valueColumn s
 }
 
 func (e *SQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
-	return e.child._getResultAsStruct(c)
+	panic("not implemented")
 }
 func (e *SQLSMExecutor) GetResultAsMap() map[string]interface{} {
-	return e.child._getResultAsMap()
+	panic("not implemented")
 }
 
 func (e *SQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
-	return e.child._getResultAsMapList()
+	panic("not implemented")
 }
 func (e *SQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} {
-	return e.child._getResultAsStructList(c)
+	panic("not implemented")
 }
 
 func (e *SQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
-	return e.child._extractorResultSet(rse)
+	panic("not implemented")
 }
 
 func (e *SQLSMExecutor) Count() int64 {
-	return e.child._count()
+	panic("not implemented")
 }
 
 func (e *SQLSMExecutor) GetResultAsListByPage(pageNumber, pageSize, totalNumber int, elementType reflect.Type) PageDataBean {

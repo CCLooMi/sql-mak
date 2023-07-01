@@ -15,7 +15,15 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	MYDB = _db
+	if err = _db.Ping(); err != nil {
+		_db, _ := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test")
+		if err = _db.Ping(); err != nil {
+			panic(err)
+		}
+		MYDB = _db
+	} else {
+		MYDB = _db
+	}
 
 	MYDB.SetMaxOpenConns(10)
 	MYDB.SetMaxIdleConns(5)
