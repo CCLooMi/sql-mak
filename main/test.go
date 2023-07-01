@@ -13,6 +13,11 @@ func main() {
 		Execute(mysql.MYDB).
 		GetResultAsMapList()
 	fmt.Printf("%s\n", r)
+
+	mysql.INSERT_INTO("users").
+		INTO_COLUMNS("u.id", "u.name").
+		BatchArgs([]interface{}{1, 2}).
+		Execute(mysql.MYDB)
 }
 func sqlTest() {
 	sm := god.NewSQLSM()
@@ -42,7 +47,7 @@ func sqlTest() {
 
 	mysql.SELECT("u.id", "u.name").FROM("users", "u").LOGSQL(true).Sql()
 	mysql.
-		INSERT_INTO_TABLE("users").
+		INSERT_INTO("users").
 		INTO_COLUMNS("u.id", "u.name").
 		VALUES_SM(sm).
 		LOGSQL(true).

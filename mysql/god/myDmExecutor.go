@@ -7,9 +7,9 @@ type MySQLDMExecutor struct {
 	MDB *sql.DB
 }
 
-func NewMySQLDMExecutor(um *SQLUM, mdb *sql.DB) *MySQLDMExecutor {
+func NewMySQLDMExecutor(dm *SQLDM, mdb *sql.DB) *MySQLDMExecutor {
 	exe := &MySQLDMExecutor{MDB: mdb}
-	exe.SQLUMExecutor = *NewSQLUMExecutor(um)
+	exe.SQLDMExecutor = *NewSQLDMExecutor(dm)
 	return exe
 }
 

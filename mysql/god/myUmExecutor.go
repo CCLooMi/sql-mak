@@ -2,18 +2,18 @@ package god
 
 import "database/sql"
 
-type MyUMExecutor struct {
+type MySQLUMExecutor struct {
 	SQLUMExecutor
 	MDB *sql.DB
 }
 
-func NewMyUMExecutor(um *SQLUM, mdb *sql.DB) *MyUMExecutor {
-	exe := &MyUMExecutor{MDB: mdb}
+func NewMySQLUMExecutor(um *SQLUM, mdb *sql.DB) *MySQLUMExecutor {
+	exe := &MySQLUMExecutor{MDB: mdb}
 	exe.SQLUMExecutor = *NewSQLUMExecutor(um)
 	return exe
 }
 
-func (exe *MyUMExecutor) Update() sql.Result {
+func (exe *MySQLUMExecutor) Update() sql.Result {
 	stmt, err := exe.MDB.Prepare(exe.God.Sql())
 	if err != nil {
 		panic(err)
@@ -24,7 +24,7 @@ func (exe *MyUMExecutor) Update() sql.Result {
 	}
 	return r
 }
-func (exe *MyUMExecutor) BatchUpdate() []sql.Result {
+func (exe *MySQLUMExecutor) BatchUpdate() []sql.Result {
 	stmt, err := exe.MDB.Prepare(exe.God.Sql())
 	if err != nil {
 		panic(err)

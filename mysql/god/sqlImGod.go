@@ -1,6 +1,7 @@
 package god
 
 import (
+	"database/sql"
 	"fmt"
 	"reflect"
 	"strings"
@@ -86,11 +87,8 @@ func (im *SQLIM) BatchArgs(batchArgs ...[]interface{}) *SQLIM {
 	im.batchArgs = append(im.batchArgs, batchArgs...)
 	return im
 }
-func (im *SQLIM) Execute() *SQLIMExecutor {
-	// god := im.toSQLGod()
-	// executor, _ := GetExecutor("im").(SQLIMExecutor)
-	// return &executor
-	return nil
+func (im *SQLIM) Execute(mdb *sql.DB) *MySQLIMExecutor {
+	return NewMySQLIMExecutor(im, mdb)
 }
 
 func (im *SQLIM) _sql(sb *strings.Builder) {

@@ -1,6 +1,7 @@
 package god
 
 import (
+	"database/sql"
 	"reflect"
 	"strings"
 )
@@ -130,13 +131,8 @@ func (dm *SQLDM) BatchArgs(batchArgs ...[]interface{}) *SQLDM {
 	dm.batchArgs = append(dm.batchArgs, batchArgs...)
 	return dm
 }
-func (dm *SQLDM) Execute() *SQLDMExecutor {
-	// god := dm.toSQLGod()
-	// exeType := GetExecutor("dm")
-	// reflect.New(exeType)
-	// executor, _ := GetExecutor("dm").(SQLDMExecutor)
-	// return &executor
-	return nil
+func (dm *SQLDM) Execute(mdb *sql.DB) *MySQLDMExecutor {
+	return NewMySQLDMExecutor(dm, mdb)
 }
 
 func (dm *SQLDM) _sql(sb *strings.Builder) {

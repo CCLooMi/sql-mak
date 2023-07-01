@@ -1,6 +1,7 @@
 package god
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"reflect"
@@ -29,126 +30,126 @@ func NewSQLUM() *SQLUM {
 	return um
 }
 
-func (sm *SQLUM) toAbstractSQLGodChild() AbstractSQLGodChild {
-	return sm
+func (um *SQLUM) toAbstractSQLGodChild() AbstractSQLGodChild {
+	return um
 }
-func (sm *SQLUM) UPDATE(table interface{}, alias string) *SQLUM {
+func (um *SQLUM) UPDATE(table interface{}, alias string) *SQLUM {
 	switch tv := table.(type) {
 	case reflect.Type:
-		sm.tables = append(sm.tables, sm.TableName(tv)+" "+alias)
+		um.tables = append(um.tables, um.TableName(tv)+" "+alias)
 	case string:
-		sm.tables = append(sm.tables, tv+" "+alias)
+		um.tables = append(um.tables, tv+" "+alias)
 	}
-	return sm
+	return um
 }
-func (sm *SQLUM) LEFT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
+func (um *SQLUM) LEFT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
 	switch tv := table.(type) {
 	case reflect.Type:
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, "LEFT JOIN "+sm.TableName(tv)+" "+alias+" ON "+on)
+		um.joins = append(um.joins, "LEFT JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	case string:
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, "LEFT JOIN "+tv+" "+alias+" ON "+on)
+		um.joins = append(um.joins, "LEFT JOIN "+tv+" "+alias+" ON "+on)
 	case *SQLSM:
-		sm.hasSubSelect = true
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		um.hasSubSelect = true
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, []interface{}{"LEFT JOIN ", A{tv, alias}, " ON " + on})
-		sm.args = append(sm.args, tv.args...)
+		um.joins = append(um.joins, []interface{}{"LEFT JOIN ", A{tv, alias}, " ON " + on})
+		um.args = append(um.args, tv.args...)
 	}
-	sm.args = append(sm.args, args...)
-	return sm
+	um.args = append(um.args, args...)
+	return um
 }
 
-func (sm *SQLUM) RIGHT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
+func (um *SQLUM) RIGHT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
 	switch tv := table.(type) {
 	case reflect.Type:
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, "RIGHT JOIN "+sm.TableName(tv)+" "+alias+" ON "+on)
+		um.joins = append(um.joins, "RIGHT JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	case string:
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, "RIGHT JOIN "+tv+" "+alias+" ON "+on)
+		um.joins = append(um.joins, "RIGHT JOIN "+tv+" "+alias+" ON "+on)
 	case *SQLSM:
-		sm.hasSubSelect = true
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		um.hasSubSelect = true
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, []interface{}{"RIGHT JOIN ", A{tv, alias}, " ON " + on})
-		sm.args = append(sm.args, tv.args...)
+		um.joins = append(um.joins, []interface{}{"RIGHT JOIN ", A{tv, alias}, " ON " + on})
+		um.args = append(um.args, tv.args...)
 	}
-	sm.args = append(sm.args, args...)
-	return sm
+	um.args = append(um.args, args...)
+	return um
 }
 
-func (sm *SQLUM) INNER_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
+func (um *SQLUM) INNER_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
 	switch tv := table.(type) {
 	case reflect.Type:
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, "INNER JOIN "+sm.TableName(tv)+" "+alias+" ON "+on)
+		um.joins = append(um.joins, "INNER JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	case string:
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, "INNER JOIN "+tv+" "+alias+" ON "+on)
+		um.joins = append(um.joins, "INNER JOIN "+tv+" "+alias+" ON "+on)
 	case *SQLSM:
-		sm.hasSubSelect = true
-		if sm.joins == nil {
-			sm.joins = make([]interface{}, 0)
+		um.hasSubSelect = true
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
 		}
-		sm.joins = append(sm.joins, []interface{}{"INNER JOIN ", A{tv, alias}, " ON " + on})
-		sm.args = append(sm.args, tv.args...)
+		um.joins = append(um.joins, []interface{}{"INNER JOIN ", A{tv, alias}, " ON " + on})
+		um.args = append(um.args, tv.args...)
 	}
-	sm.args = append(sm.args, args...)
-	return sm
+	um.args = append(um.args, args...)
+	return um
 }
 
-func (sm *SQLUM) SET(set string, args ...interface{}) *SQLUM {
-	sm.sets = append(sm.sets, set)
-	sm.args = append(sm.args, args...)
-	return sm
+func (um *SQLUM) SET(set string, args ...interface{}) *SQLUM {
+	um.sets = append(um.sets, set)
+	um.args = append(um.args, args...)
+	return um
 }
 
-func (sm *SQLUM) WHERE(where string, args ...interface{}) *SQLUM {
-	sm.where = "WHERE " + where
-	sm.args = append(sm.args, args...)
-	return sm
+func (um *SQLUM) WHERE(where string, args ...interface{}) *SQLUM {
+	um.where = "WHERE " + where
+	um.args = append(um.args, args...)
+	return um
 }
 
-func (sm *SQLUM) AND(and string, args ...interface{}) *SQLUM {
-	if sm.andor == nil {
-		sm.andor = make([]string, 0)
+func (um *SQLUM) AND(and string, args ...interface{}) *SQLUM {
+	if um.andor == nil {
+		um.andor = make([]string, 0)
 	}
-	sm.andor = append(sm.andor, "AND "+and)
-	sm.args = append(sm.args, args...)
-	return sm
+	um.andor = append(um.andor, "AND "+and)
+	um.args = append(um.args, args...)
+	return um
 }
 
-func (sm *SQLUM) OR(or string, args ...interface{}) *SQLUM {
-	if sm.andor == nil {
-		sm.andor = make([]string, 0)
+func (um *SQLUM) OR(or string, args ...interface{}) *SQLUM {
+	if um.andor == nil {
+		um.andor = make([]string, 0)
 	}
-	sm.andor = append(sm.andor, "OR "+or)
-	sm.args = append(sm.args, args...)
-	return sm
+	um.andor = append(um.andor, "OR "+or)
+	um.args = append(um.args, args...)
+	return um
 }
 
-func (sm *SQLUM) WHERE_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
+func (um *SQLUM) WHERE_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
 	if len(args) > 0 {
 		sb := strings.Builder{}
 		sb.WriteString("WHERE " + column + " " + inOrNotIn + " (")
 		for i, arg := range args {
-			sm.args = append(sm.args, arg)
+			um.args = append(um.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
 				continue
@@ -156,17 +157,17 @@ func (sm *SQLUM) WHERE_IN(column string, inOrNotIn string, args ...interface{}) 
 			sb.WriteRune('?')
 		}
 		sb.WriteString(")")
-		sm.where = sb.String()
+		um.where = sb.String()
 	}
-	return sm
+	return um
 }
 
-func (sm *SQLUM) AND_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
+func (um *SQLUM) AND_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
 	if len(args) > 0 {
 		sb := strings.Builder{}
 		sb.WriteString("AND " + column + " " + inOrNotIn + " (")
 		for i, arg := range args {
-			sm.args = append(sm.args, arg)
+			um.args = append(um.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
 				continue
@@ -174,20 +175,20 @@ func (sm *SQLUM) AND_IN(column string, inOrNotIn string, args ...interface{}) *S
 			sb.WriteRune('?')
 		}
 		sb.WriteString(")")
-		if sm.andor == nil {
-			sm.andor = make([]string, 0)
+		if um.andor == nil {
+			um.andor = make([]string, 0)
 		}
-		sm.andor = append(sm.andor, sb.String())
+		um.andor = append(um.andor, sb.String())
 	}
-	return sm
+	return um
 }
 
-func (sm *SQLUM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
+func (um *SQLUM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
 	if len(args) > 0 {
 		sb := strings.Builder{}
 		sb.WriteString("OR " + column + " " + inOrNotIn + " (")
 		for i, arg := range args {
-			sm.args = append(sm.args, arg)
+			um.args = append(um.args, arg)
 			if i != len(args)-1 {
 				sb.WriteString("?,")
 				continue
@@ -195,17 +196,17 @@ func (sm *SQLUM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQ
 			sb.WriteRune('?')
 		}
 		sb.WriteString(")")
-		if sm.andor == nil {
-			sm.andor = make([]string, 0)
+		if um.andor == nil {
+			um.andor = make([]string, 0)
 		}
-		sm.andor = append(sm.andor, sb.String())
+		um.andor = append(um.andor, sb.String())
 	}
-	return sm
+	return um
 }
 
-func (sm *SQLUM) LIMIT(limits ...interface{}) *SQLUM {
+func (um *SQLUM) LIMIT(limits ...interface{}) *SQLUM {
 	if len(limits) > 0 {
-		if sm.hasSubSelect {
+		if um.hasSubSelect {
 			log.Fatal("非单表更新 SQL 不能使用 LIMIT，请在子查询中使用 LIMIT 查出需要更新的数据再使用 UPDATE 进行更新（无需 LIMIT）")
 		}
 		sb := strings.Builder{}
@@ -217,74 +218,71 @@ func (sm *SQLUM) LIMIT(limits ...interface{}) *SQLUM {
 			}
 		}
 		sb.WriteString(" ")
-		sm.limit = sb.String()
+		um.limit = sb.String()
 	}
-	return sm
+	return um
 }
 
-func (sm *SQLUM) BatchArgs(batchArgs ...[]interface{}) *SQLUM {
-	if sm.batchArgs == nil {
-		sm.batchArgs = make([][]interface{}, 0)
+func (um *SQLUM) BatchArgs(batchArgs ...[]interface{}) *SQLUM {
+	if um.batchArgs == nil {
+		um.batchArgs = make([][]interface{}, 0)
 	}
-	sm.batchArgs = append(sm.batchArgs, batchArgs...)
-	return sm
+	um.batchArgs = append(um.batchArgs, batchArgs...)
+	return um
 }
 
-func (sm *SQLUM) SetBatchArgs(batchArgs [][]interface{}) *SQLUM {
-	sm.batchArgs = batchArgs
-	return sm
+func (um *SQLUM) SetBatchArgs(batchArgs [][]interface{}) *SQLUM {
+	um.batchArgs = batchArgs
+	return um
 }
 
-func (sm *SQLUM) Execute() *SQLUMExecutor {
-	// god := sm.toSQLGod()
-	// executor, _ := GetExecutor("um").(SQLUMExecutor)
-	// return &executor
-	return nil
+func (um *SQLUM) Execute(mdb *sql.DB) *MySQLUMExecutor {
+	return NewMySQLUMExecutor(um, mdb)
 }
-func (sm *SQLUM) _sql(sb *strings.Builder) {
+func (um *SQLUM) _sql(sb *strings.Builder) {
 	sb.WriteString("UPDATE ")
-	if len(sm.tables) > 0 {
-		for i, table := range sm.tables {
+	if len(um.tables) > 0 {
+		for i, table := range um.tables {
 			sb.WriteString(table)
-			if i != len(sm.tables)-1 {
+			if i != len(um.tables)-1 {
 				sb.WriteRune(',')
 			}
 		}
 		sb.WriteString(" ")
 	}
-	if sm.joins != nil {
-		for _, join := range sm.joins {
+	if um.joins != nil {
+		for _, join := range um.joins {
 			if j, ok := join.(string); ok {
 				sb.WriteString(j)
 			} else {
 				oa := join.([3]interface{})
-				sm := oa[1].(A)
+				um := oa[1].(A)
 				sb.WriteString(oa[0].(string) + "(")
-				sm.sm._sql(sb)
+				um.sm._sql(sb)
 				sb.WriteString(")" + oa[2].(string))
 			}
 			sb.WriteString(" ")
 		}
 	}
-	if len(sm.sets) > 0 {
+	if len(um.sets) > 0 {
 		sb.WriteString("SET ")
-		for i, set := range sm.sets {
+		for i, set := range um.sets {
 			sb.WriteString(set)
-			if i != len(sm.sets)-1 {
+			if i != len(um.sets)-1 {
 				sb.WriteRune(',')
 			}
 		}
 		sb.WriteString(" ")
 	}
-	sb.WriteString(sm.where)
+	sb.WriteString(um.where)
 	sb.WriteString(" ")
-	if sm.andor != nil {
-		for _, ao := range sm.andor {
+	if um.andor != nil {
+		for _, ao := range um.andor {
 			sb.WriteString(ao)
 			sb.WriteString(" ")
 		}
 	}
-	if sm.limit != "" {
-		sb.WriteString(sm.limit)
+	if um.limit != "" {
+		sb.WriteString(um.limit)
 	}
 }

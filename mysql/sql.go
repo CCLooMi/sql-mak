@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"database/sql"
-	"reflect"
 	"sql-mak/mysql/god"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -49,16 +48,12 @@ func SELECT_EXP_AS(exp *god.EXP, alias string) *god.SQLSM {
 	return god.NewSQLSM().SELECT_EXP(exp, alias)
 }
 
-func INSERT_INTO(c reflect.Type, columns ...string) *god.SQLIM {
-	return god.NewSQLIM().INSERT_INTO(c, columns...)
-}
-
-func INSERT_INTO_TABLE(table string, columns ...string) *god.SQLIM {
+func INSERT_INTO(table interface{}, columns ...string) *god.SQLIM {
 	return god.NewSQLIM().INSERT_INTO(table, columns...)
 }
 
-func UPDATE(c reflect.Type, alias string) *god.SQLUM {
-	return god.NewSQLUM().UPDATE(c, alias)
+func UPDATE(table interface{}, alias string) *god.SQLUM {
+	return god.NewSQLUM().UPDATE(table, alias)
 }
 
 func UPDATE_TABLE(table, alias string) *god.SQLUM {
