@@ -112,7 +112,7 @@ func (exe *MySQLSMExecutor) Count() int64 {
 		if err != nil {
 			panic(err)
 		}
-		return count
+		return count //lint:ignore SA4004 just break
 	}
 	return 0
 }
