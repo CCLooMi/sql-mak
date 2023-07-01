@@ -9,8 +9,7 @@ import (
 type SQLSMExecutor struct {
 	SQLExecutor
 	SQLSMExecutorChild
-	SM    *SQLSM
-	child SQLSMExecutorChild
+	SM *SQLSM
 }
 
 type SQLSMExecutorChild interface {
@@ -37,11 +36,10 @@ type ByPageFilter interface {
 	DoFilter(rs *sql.Rows)
 }
 
-func NewSQLSMExecutor(sm *SQLSM, child SQLSMExecutorChild) *SQLSMExecutor {
+func NewSQLSMExecutor(sm *SQLSM) *SQLSMExecutor {
 	sme := &SQLSMExecutor{SM: sm}
 	god := sm.toSQLGod()
 	sme.SQLExecutor = *NewSQLExecutor(god)
-	sme.child = child
 	return sme
 }
 
@@ -128,28 +126,6 @@ func (e *SQLSMExecutor) GetResultColumnAsObjectString(labelColumn, valueColumn s
 		}
 		return nil
 	})
-}
-
-func (e *SQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
-	panic("not implemented")
-}
-func (e *SQLSMExecutor) GetResultAsMap() map[string]interface{} {
-	panic("not implemented")
-}
-
-func (e *SQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
-	panic("not implemented")
-}
-func (e *SQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} {
-	panic("not implemented")
-}
-
-func (e *SQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
-	panic("not implemented")
-}
-
-func (e *SQLSMExecutor) Count() int64 {
-	panic("not implemented")
 }
 
 func (e *SQLSMExecutor) GetResultAsListByPage(pageNumber, pageSize, totalNumber int, elementType reflect.Type) PageDataBean {

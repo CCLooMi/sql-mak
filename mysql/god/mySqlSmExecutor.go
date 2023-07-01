@@ -8,26 +8,31 @@ import (
 type MySQLSMExecutor struct {
 	SQLSMExecutor
 	MDB *sql.DB
-	// SQLSMExecutorChild
 }
 
 func NewMySQLSMExecutor(sm *SQLSM, mdb *sql.DB) *MySQLSMExecutor {
 	exe := &MySQLSMExecutor{MDB: mdb}
-	exe.SQLSMExecutor = *NewSQLSMExecutor(sm, exe)
+	exe.SQLSMExecutor = *NewSQLSMExecutor(sm)
 	return exe
 }
 
 func (exe *MySQLSMExecutor) INSERT_INTO_TABLExtractorResultSet(rse ResultSetExtractor) interface{} {
-	sm := exe.SM
-	rows, err := exe.MDB.Query(sm.Sql(), sm.Args()...)
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
 	if err != nil {
 		panic(err)
 	}
 	return rse(rows)
 }
 func (exe *MySQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
-	sm := exe.SM
-	rows, err := exe.MDB.Query(sm.Sql(), sm.Args()...)
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
 	if err != nil {
 		panic(err)
 	}
@@ -36,8 +41,11 @@ func (exe *MySQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
 	return instance
 }
 func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
-	sm := exe.SM
-	rows, err := exe.MDB.Query(sm.Sql(), sm.Args()...)
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
 	if err != nil {
 		panic(err)
 	}
@@ -46,8 +54,11 @@ func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	return m
 }
 func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
-	sm := exe.SM
-	rows, err := exe.MDB.Query(sm.Sql(), sm.Args()...)
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
 	if err != nil {
 		panic(err)
 	}
@@ -58,8 +69,11 @@ func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
 	return list
 }
 func (exe *MySQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} {
-	sm := exe.SM
-	rows, err := exe.MDB.Query(sm.Sql(), sm.Args()...)
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
 	if err != nil {
 		panic(err)
 	}
@@ -72,16 +86,22 @@ func (exe *MySQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} 
 	return list.Interface().([]interface{})
 }
 func (exe *MySQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
-	sm := exe.SM
-	rows, err := exe.MDB.Query(sm.Sql(), sm.Args()...)
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
 	if err != nil {
 		panic(err)
 	}
 	return rse(rows)
 }
 func (exe *MySQLSMExecutor) Count() int64 {
-	sm := exe.SM
-	rows, err := exe.MDB.Query(sm.CountSql(), sm.Args()...)
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
 	if err != nil {
 		panic(err)
 	}

@@ -5,9 +5,10 @@ type SQLDMExecutor struct {
 	SQLUMExecutor
 }
 
-func NewSQLDMExecutor(god SQLGod, child *SQLUMExecutorChild) *SQLDMExecutor {
+func NewSQLDMExecutor(dm *SQLDM) *SQLDMExecutor {
 	exe := &SQLDMExecutor{}
+	god := dm.toSQLGod()
 	exe.SQLExecutor = *NewSQLExecutor(god)
-	exe.SQLUMExecutor = *NewSQLUMExecutor(god, child)
+	// exe.SQLUMExecutor = *NewSQLUMExecutor(dm)
 	return exe
 }
