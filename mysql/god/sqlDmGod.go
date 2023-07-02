@@ -2,7 +2,6 @@ package god
 
 import (
 	"database/sql"
-	"reflect"
 	"strings"
 )
 
@@ -26,12 +25,12 @@ func NewSQLDM() *SQLDM {
 func (dm *SQLDM) toAbstractSQLGodChild() AbstractSQLGodChild {
 	return dm
 }
-func (dm *SQLDM) FROM(arg interface{}) *SQLDM {
-	switch v := arg.(type) {
-	case reflect.Type:
-		dm.table = dm.TableName(v)
+func (dm *SQLDM) FROM(table interface{}) *SQLDM {
+	switch v := table.(type) {
 	case string:
 		dm.table = v
+	default:
+		dm.table = dm.TableName(v)
 	}
 	return dm
 }

@@ -22,6 +22,18 @@ type AbstractSQLGodChild interface {
 	_countSQL(sb *strings.Builder)
 }
 
+// A struct for binding SQLSM objects to aliases
+type A struct {
+	sm    *SQLSM
+	alias string
+}
+
+// A struct for binding EXP objects to aliases
+type B struct {
+	exp   *EXP
+	alias string
+}
+
 func NewAbstractSQLGod(child *AbstractSQLGodChild) *AbstractSQLGod {
 	agod := &AbstractSQLGod{
 		Log:          log.Default(),
@@ -33,22 +45,40 @@ func NewAbstractSQLGod(child *AbstractSQLGodChild) *AbstractSQLGod {
 	return agod
 }
 
-func (g *AbstractSQLGod) TableName(t reflect.Type) string {
-	// 获取结构体名称
+func (g *AbstractSQLGod) TableName(table interface{}) string {
+	t := reflect.TypeOf(table)
 	name := t.Name()
-
-	// 判断结构体中是否定义了TableName()方法
+	if t.Kind() == reflect.Ptr { //指针
+		method, ok := t.MethodByName("TableName")
+		if ok {
+			name = method.Func.Call([]reflect.Value{reflect.ValueOf(table)})[0].String()
+		}
+		return name
+	}
+	//获取值地址类型、
+	t = reflect.PtrTo(t)
 	method, ok := t.MethodByName("TableName")
 	if ok {
-		// 创建零值的结构体对象
-		obj := reflect.Zero(t).Interface()
-
-		// 调用TableName()方法获取表名
-		values := method.Func.Call([]reflect.Value{reflect.ValueOf(obj)})
-		name = values[0].String()
+		name = method.Func.Call([]reflect.Value{reflect.New(t).Elem()})[0].String()
 	}
-
 	return name
+}
+
+type EntityInfo struct {
+	TableName string
+	Fields    []string
+	Columns   []string
+}
+
+// 传入结构体指针或结构体，返回实体信息
+func (g *AbstractSQLGod) TableColumns(table interface{}) *EntityInfo {
+	t := reflect.TypeOf(table)
+	if t.Kind() == reflect.Ptr { //指针
+
+	}
+	//获取值地址类型、
+	t = reflect.PtrTo(t)
+	return nil
 }
 
 func (g *AbstractSQLGod) IF(condition bool, fs ...func(g *AbstractSQLGod)) *AbstractSQLGod {
@@ -121,18 +151,5 @@ func (g *AbstractSQLGod) flat(args []interface{}, result *[]interface{}) {
 }
 
 func (g *AbstractSQLGod) toSQLGod() SQLGod {
-	// return (*SQLGod)(unsafe.Pointer(g))
 	return g
-}
-
-// A struct for binding SQLSM objects to aliases
-type A struct {
-	sm    *SQLSM
-	alias string
-}
-
-// A struct for binding EXP objects to aliases
-type B struct {
-	exp   *EXP
-	alias string
 }

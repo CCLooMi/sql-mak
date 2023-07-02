@@ -2,8 +2,6 @@ package god
 
 import (
 	"database/sql"
-	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -32,10 +30,8 @@ func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {
 	switch t := table.(type) {
 	case string:
 		im.table = t
-	case reflect.Type:
-		im.table = im.TableName(t)
 	default:
-		im.table = fmt.Sprintf("%s", table)
+		im.table = im.TableName(table)
 	}
 	im.columns = append(im.columns, columns...)
 	return im

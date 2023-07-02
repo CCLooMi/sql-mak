@@ -56,10 +56,6 @@ func UPDATE(table interface{}, alias string) *god.SQLUM {
 	return god.NewSQLUM().UPDATE(table, alias)
 }
 
-func UPDATE_TABLE(table, alias string) *god.SQLUM {
-	return god.NewSQLUM().UPDATE(table, alias)
-}
-
 func DELETE() *god.SQLDM {
 	return god.NewSQLDM()
 }
