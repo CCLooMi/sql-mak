@@ -3,6 +3,7 @@ package god
 import (
 	"log"
 	"reflect"
+	"sql-mak/utils"
 	"strings"
 )
 
@@ -46,39 +47,7 @@ func NewAbstractSQLGod(child *AbstractSQLGodChild) *AbstractSQLGod {
 }
 
 func (g *AbstractSQLGod) TableName(table interface{}) string {
-	t := reflect.TypeOf(table)
-	name := t.Name()
-	if t.Kind() == reflect.Ptr { //指针
-		method, ok := t.MethodByName("TableName")
-		if ok {
-			name = method.Func.Call([]reflect.Value{reflect.ValueOf(table)})[0].String()
-		}
-		return name
-	}
-	//获取值地址类型、
-	t = reflect.PtrTo(t)
-	method, ok := t.MethodByName("TableName")
-	if ok {
-		name = method.Func.Call([]reflect.Value{reflect.New(t).Elem()})[0].String()
-	}
-	return name
-}
-
-type EntityInfo struct {
-	TableName string
-	Fields    []string
-	Columns   []string
-}
-
-// 传入结构体指针或结构体，返回实体信息
-func (g *AbstractSQLGod) TableColumns(table interface{}) *EntityInfo {
-	t := reflect.TypeOf(table)
-	if t.Kind() == reflect.Ptr { //指针
-
-	}
-	//获取值地址类型、
-	t = reflect.PtrTo(t)
-	return nil
+	return utils.TableName(table)
 }
 
 func (g *AbstractSQLGod) IF(condition bool, fs ...func(g *AbstractSQLGod)) *AbstractSQLGod {

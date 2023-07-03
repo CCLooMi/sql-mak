@@ -2,48 +2,31 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"sql-mak/mysql"
 	"sql-mak/mysql/entity"
+	"sql-mak/utils"
 	"testing"
 	"time"
 )
 
-func TestTableColumns(t *testing.T) {
+func TestTableName(t *testing.T) {
+	u1 := utils.TableName(entity.User{})
+	u2 := utils.TableName(&entity.User{})
+
+	if u1 != u2 {
+		t.Fail()
+	}
+}
+
+func TestTableValues(t *testing.T) {
 	user := entity.User{
 		Username: "johnDoe",
 		Password: []byte("password123")}
 	user.ID = []byte("1")
 	user.InsertedAt = time.Now()
 	user.UpdatedAt = time.Now()
-
-	t.Log(getFields(user))
-}
-
-func getFields(o interface{}) []string {
-	t := reflect.TypeOf(o)
-	s := make([]string, 0)
-	for i := 0; i < t.NumField(); i++ {
-		fd := t.Field(i)
-		if fd.Type.Kind() == reflect.Struct {
-			// 如果字段是结构体类型，需要判断是否是指针类型
-			if fd.Type.Kind() == reflect.Ptr {
-				// 如果是指针类型，需要解引用后再递归调用
-				s = append(s, getFields(reflect.ValueOf(o).Field(i).Elem().Interface())...)
-			} else if fd.Anonymous {
-				// 如果是匿名结构体类型，直接递归调用
-				s = append(s, getFields(reflect.ValueOf(o).Field(i).Interface())...)
-			} else {
-				s = append(s, fd.Name)
-			}
-			continue
-		}
-		if fd.Anonymous && fd.Type.Kind() == reflect.Interface {
-			continue
-		}
-		s = append(s, fd.Name)
-	}
-	return s
+	t.Log(utils.GetEntityInfo(user))
+	t.Log(utils.GetEntityInfo(&user))
 }
 
 func TestInsert(t *testing.T) {

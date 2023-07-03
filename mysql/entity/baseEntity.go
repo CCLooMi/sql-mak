@@ -12,19 +12,19 @@ type BaseEntity interface {
 
 type IdEntity struct {
 	BaseEntity
-	ID []byte `gorm:"type:binary(16); primaryKey; not null; comment:'主键ID'"`
+	ID []byte `orm:"type:binary(16); primaryKey; not null; comment:'主键ID'" column:"id"`
 }
 
 type TimeEntity struct {
-	InsertedAt time.Time `gorm:"not null; comment:'插入时间'"`
-	UpdatedAt  time.Time `gorm:"not null; comment:'更新时间'"`
+	InsertedAt time.Time `orm:"not null; comment:'插入时间'" column:"inserted_at"`
+	UpdatedAt  time.Time `orm:"not null; comment:'更新时间'" column:"updated_at"`
 }
 
 type Account struct {
 	IdEntity
 	TimeEntity
-	UserID  []byte          `gorm:"type:binary(16); comment:'用户ID'"`
-	Balance decimal.Decimal `gorm:"type:decimal(19,2); comment:'资金'"`
+	UserID  []byte          `orm:"type:binary(16); comment:'用户ID'" column:"user_id"`
+	Balance decimal.Decimal `orm:"type:decimal(19,2); comment:'资金'" column:"balance"`
 }
 
 func (*Account) TableName() string {
@@ -34,9 +34,9 @@ func (*Account) TableName() string {
 type Category struct {
 	IdEntity
 	TimeEntity
-	Name        string `gorm:"type:varchar(50); comment:'分类名称'"`
-	Description string `gorm:"type:varchar(255); comment:'分类描述'"`
-	Order       int    `gorm:"comment:'分类排序'"`
+	Name        string `orm:"type:varchar(50); comment:'分类名称'" column:"name"`
+	Description string `orm:"type:varchar(255); comment:'分类描述'" column:"description"`
+	Order       int    `orm:"comment:'分类排序'"`
 }
 
 func (*Category) TableName() string {
@@ -46,11 +46,11 @@ func (*Category) TableName() string {
 type Comment struct {
 	IdEntity
 	TimeEntity
-	Content  string `gorm:"type:text; comment:'评论内容'"`
-	Rating   int    `gorm:"comment:'评分'"`
-	UserID   []byte `gorm:"type:binary(16); comment:'用户ID'"`
-	TargetID []byte `gorm:"type:binary(16); comment:'目标ID'"`
-	RootID   []byte `gorm:"type:binary(16); comment:'根ID'"`
+	Content  string `orm:"type:text; comment:'评论内容'" column:"content"`
+	Rating   int    `orm:"comment:'评分'" column:"rating"`
+	UserID   []byte `orm:"type:binary(16); comment:'用户ID'" column:"user_id"`
+	TargetID []byte `orm:"type:binary(16); comment:'目标ID'" column:"target_id"`
+	RootID   []byte `orm:"type:binary(16); comment:'根ID'" column:"root_id"`
 }
 
 func (*Comment) TableName() string {
@@ -60,8 +60,8 @@ func (*Comment) TableName() string {
 type Organization struct {
 	IdEntity
 	TimeEntity
-	Name        string `gorm:"type:varchar(255); not null; comment:'组织名称'"`
-	Description string `gorm:"type:varchar(255); comment:'组织描述'"`
+	Name        string `orm:"type:varchar(255); not null; comment:'组织名称'" column:"name"`
+	Description string `orm:"type:varchar(255); comment:'组织描述'" column:"description"`
 }
 
 func (*Organization) TableName() string {
@@ -71,10 +71,10 @@ func (*Organization) TableName() string {
 type Permission struct {
 	IdEntity
 	TimeEntity
-	Name        string `gorm:"type:varchar(255); not null; comment:'权限名称'"`
-	Descriptor  string `gorm:"type:varchar(255); not null; comment:'权限描述'"`
-	Type        string `gorm:"type:varchar(255); not null; comment:'权限类型'"`
-	Description string `gorm:"type:varchar(255); comment:'权限描述'"`
+	Name        string `orm:"type:varchar(255); not null; comment:'权限名称'" column:"name"`
+	Descriptor  string `orm:"type:varchar(255); not null; comment:'权限描述'" column:"descriptor"`
+	Type        string `orm:"type:varchar(255); not null; comment:'权限类型'" column:"type"`
+	Description string `orm:"type:varchar(255); comment:'权限描述'" column:"description"`
 }
 
 func (*Permission) TableName() string {
@@ -84,10 +84,10 @@ func (*Permission) TableName() string {
 type PurchasedWpp struct {
 	IdEntity
 	TimeEntity
-	UserID       []byte          `gorm:"type:binary(16); comment:'用户ID'"`
-	WppID        []byte          `gorm:"type:binary(16); comment:'应用ID'"`
-	Price        decimal.Decimal `gorm:"type:decimal(10, 0); comment:'购买价格'"`
-	PurchaseTime time.Time       `gorm:"comment:'购买时间'"`
+	UserID       []byte          `orm:"type:binary(16); comment:'用户ID'" column:"user_id"`
+	WppID        []byte          `orm:"type:binary(16); comment:'应用ID'" column:"wpp_id"`
+	Price        decimal.Decimal `orm:"type:decimal(10, 0); comment:'购买价格'" column:"price"`
+	PurchaseTime time.Time       `orm:"comment:'购买时间'" column:"purchase_time"`
 }
 
 func (*PurchasedWpp) TableName() string {
@@ -97,8 +97,8 @@ func (*PurchasedWpp) TableName() string {
 type RolePermission struct {
 	IdEntity
 	TimeEntity
-	RoleID       []byte `gorm:"type:binary(16); comment:'角色ID'"`
-	PermissionID []byte `gorm:"type:binary(16); comment:'权限ID'"`
+	RoleID       []byte `orm:"type:binary(16); comment:'角色ID'" column:"role_id"`
+	PermissionID []byte `orm:"type:binary(16); comment:'权限ID'" column:"permission_id"`
 }
 
 func (*RolePermission) TableName() string {
@@ -108,8 +108,8 @@ func (*RolePermission) TableName() string {
 type Role struct {
 	IdEntity
 	TimeEntity
-	Name        string `gorm:"type:varchar(255); not null; comment:'角色名称'"`
-	Description string `gorm:"type:varchar(255); comment:'角色描述'"`
+	Name        string `orm:"type:varchar(255); not null; comment:'角色名称'" column:"name"`
+	Description string `orm:"type:varchar(255); comment:'角色描述'" column:"description"`
 }
 
 func (*Role) TableName() string {
@@ -117,8 +117,8 @@ func (*Role) TableName() string {
 }
 
 type SchemaMigration struct {
-	Version    int64      `gorm:"primaryKey; not null; comment:'版本号'"`
-	InsertedAt *time.Time `gorm:"comment:'插入时间'"`
+	Version    int64      `orm:"primaryKey; not null; comment:'版本号'" column:"version"`
+	InsertedAt *time.Time `orm:"comment:'插入时间'" column:"inserted_at"`
 }
 
 func (*SchemaMigration) TableName() string {
@@ -128,9 +128,9 @@ func (*SchemaMigration) TableName() string {
 type TMessage struct {
 	IdEntity
 	TimeEntity
-	RoomID  string `gorm:"type:varchar(255); comment:'房间ID'"`
-	Name    string `gorm:"type:varchar(255); comment:'名称'"`
-	Message string `gorm:"type:varchar(255); comment:'消息内容'"`
+	RoomID  string `orm:"type:varchar(255); comment:'房间ID'" column:"room_id"`
+	Name    string `orm:"type:varchar(255); comment:'名称'" column:"name"`
+	Message string `orm:"type:varchar(255); comment:'消息内容'" column:"message"`
 }
 
 func (*TMessage) TableName() string {
@@ -140,12 +140,12 @@ func (*TMessage) TableName() string {
 type Upload struct {
 	IdEntity
 	TimeEntity
-	FileID   []byte `gorm:"type:varbinary(32); comment:'文件ID'"`
-	FileName string `gorm:"type:varchar(255); comment:'文件名称'"`
-	FileType string `gorm:"type:varchar(255); comment:'文件类型'"`
-	FileSize int64  `gorm:"type:bigint(20); comment:'文件大小'"`
-	BizID    []byte `gorm:"type:binary(16); comment:'业务ID'"`
-	BizType  string `gorm:"type:varchar(255); comment:'业务类型'"`
+	FileID   []byte `orm:"type:varbinary(32); comment:'文件ID'" column:"file_id"`
+	FileName string `orm:"type:varchar(255); comment:'文件名称'" column:"file_name"`
+	FileType string `orm:"type:varchar(255); comment:'文件类型'" column:"file_type"`
+	FileSize int64  `orm:"type:bigint(20); comment:'文件大小'" column:"file_size"`
+	BizID    []byte `orm:"type:binary(16); comment:'业务ID'" column:"biz_id"`
+	BizType  string `orm:"type:varchar(255); comment:'业务类型'" column:"biz_type"`
 }
 
 func (*Upload) TableName() string {
@@ -155,8 +155,8 @@ func (*Upload) TableName() string {
 type UserOrganization struct {
 	IdEntity
 	TimeEntity
-	UserID         []byte `gorm:"type:binary(16); comment:'用户ID'"`
-	OrganizationID []byte `gorm:"type:binary(16); comment:'组织ID'"`
+	UserID         []byte `orm:"type:binary(16); comment:'用户ID'" column:"user_id"`
+	OrganizationID []byte `orm:"type:binary(16); comment:'组织ID'" column:"organization_id"`
 }
 
 func (*UserOrganization) TableName() string {
@@ -166,8 +166,8 @@ func (*UserOrganization) TableName() string {
 type UserRole struct {
 	IdEntity
 	TimeEntity
-	UserID []byte `gorm:"type:binary(16); comment:'用户ID'"`
-	RoleID []byte `gorm:"type:binary(16); comment:'角色ID'"`
+	UserID []byte `orm:"type:binary(16); comment:'用户ID'" column:"user_id"`
+	RoleID []byte `orm:"type:binary(16); comment:'角色ID'" column:"role_id"`
 }
 
 func (*UserRole) TableName() string {
@@ -177,8 +177,8 @@ func (*UserRole) TableName() string {
 type User struct {
 	IdEntity
 	TimeEntity
-	Username string `gorm:"type:varchar(255); comment:'用户名'"`
-	Password []byte `gorm:"type:varbinary(32); comment:'用户密码'"`
+	Username string `orm:"type:varchar(255); comment:'用户名'" column:"username"`
+	Password []byte `orm:"type:varbinary(32); comment:'用户密码'" column:"password"`
 }
 
 func (*User) TableName() string {
@@ -188,8 +188,8 @@ func (*User) TableName() string {
 type WppCategory struct {
 	IdEntity
 	TimeEntity
-	WppID      []byte `gorm:"type:binary(16); comment:'应用ID'"`
-	CategoryID []byte `gorm:"type:binary(16); comment:'分类ID'"`
+	WppID      []byte `orm:"type:binary(16); comment:'应用ID'" column:"wpp_id"`
+	CategoryID []byte `orm:"type:binary(16); comment:'分类ID'" column:"category_id"`
 }
 
 func (*WppCategory) TableName() string {
@@ -199,11 +199,11 @@ func (*WppCategory) TableName() string {
 type Wpp struct {
 	IdEntity
 	TimeEntity
-	Name        string `gorm:"type:varchar(64); comment:'应用名称'"`
-	Description string `gorm:"type:text; comment:'描述'"`
-	Version     string `gorm:"type:varchar(255); comment:'版本号'"`
-	DeveloperID []byte `gorm:"type:binary(16); comment:'开发者ID'"`
-	FileID      []byte `gorm:"type:varbinary(32); comment:'文件ID'"`
+	Name        string `orm:"type:varchar(64); comment:'应用名称'" column:"name"`
+	Description string `orm:"type:text; comment:'描述'" column:"description"`
+	Version     string `orm:"type:varchar(255); comment:'版本号'" column:"version"`
+	DeveloperID []byte `orm:"type:binary(16); comment:'开发者ID'" column:"developer_id"`
+	FileID      []byte `orm:"type:varbinary(32); comment:'文件ID'" column:"file_id"`
 }
 
 func (*Wpp) TableName() string {
