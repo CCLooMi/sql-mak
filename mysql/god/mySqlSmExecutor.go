@@ -2,7 +2,6 @@ package god
 
 import (
 	"database/sql"
-	"reflect"
 )
 
 type MySQLSMExecutor struct {
@@ -27,19 +26,6 @@ func (exe *MySQLSMExecutor) INSERT_INTO_TABLExtractorResultSet(rse ResultSetExtr
 	}
 	return rse(rows)
 }
-func (exe *MySQLSMExecutor) GetResultAsStruct(c reflect.Type) interface{} {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
-	if err != nil {
-		panic(err)
-	}
-	rows, err := stmp.Query(exe.God.Args()...)
-	if err != nil {
-		panic(err)
-	}
-	instance := reflect.New(c).Elem()
-	exe.RowsToStruct(rows, instance)
-	return instance
-}
 func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	stmp, err := exe.MDB.Prepare(exe.God.Sql())
 	if err != nil {
@@ -49,8 +35,10 @@ func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	if err != nil {
 		panic(err)
 	}
-	m := map[string]interface{}{}
-	exe.RowsToMap(rows, m)
+	m, err := exe.RowsToMap(rows)
+	if err != nil {
+		panic(err)
+	}
 	return m
 }
 func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
@@ -68,23 +56,6 @@ func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
 	}
 	return list
 }
-func (exe *MySQLSMExecutor) GetResultAsStructList(c reflect.Type) []interface{} {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
-	if err != nil {
-		panic(err)
-	}
-	rows, err := stmp.Query(exe.God.Args()...)
-	if err != nil {
-		panic(err)
-	}
-	sliceType := reflect.SliceOf(c)
-	list := reflect.MakeSlice(sliceType, 0, 0)
-
-	if exe.RowsToStructs(rows, &list) != nil {
-		return nil
-	}
-	return list.Interface().([]interface{})
-}
 func (exe *MySQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
 	stmp, err := exe.MDB.Prepare(exe.God.Sql())
 	if err != nil {
@@ -95,6 +66,28 @@ func (exe *MySQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface
 		panic(err)
 	}
 	return rse(rows)
+}
+
+func (exe *MySQLSMExecutor) ExtractorRows(rse RowsExtractor) error {
+	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	if err != nil {
+		return err
+	}
+	rows, err := stmp.Query(exe.God.Args()...)
+	if err != nil {
+		return err
+	}
+	// Get column names
+	columns, err := rows.Columns()
+	if err != nil {
+		return err
+	}
+	defer rows.Close() // finally close rows
+	// Iterate over rows
+	for rows.Next() {
+		rse(&columns, rows)
+	}
+	return nil
 }
 func (exe *MySQLSMExecutor) Count() int64 {
 	stmp, err := exe.MDB.Prepare(exe.God.Sql())
