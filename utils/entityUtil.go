@@ -46,7 +46,7 @@ func GetEntityInfo(table interface{}) *EntityInfo {
 }
 func getTableColumnName(field reflect.StructField) string {
 	name := field.Tag.Get("column")
-	if name == "" {
+	if name != "" {
 		return name
 	}
 	return field.Name
