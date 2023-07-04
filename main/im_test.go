@@ -11,7 +11,7 @@ import (
 
 func TestEntityInfo(t *testing.T) {
 	ei := utils.GetEntityInfo(&entity.User{})
-	t.Log(ei.TableName, ei.Columns, ei.Fields, ei.FCMap, ei.CFMap)
+	t.Log(ei.TableName, ei.Columns, ei.Fields, ei.FCMap, ei.CFMap, ei.Tags)
 }
 
 func TestTableName(t *testing.T) {

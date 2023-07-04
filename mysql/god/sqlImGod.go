@@ -2,6 +2,7 @@ package god
 
 import (
 	"database/sql"
+	"sql-mak/utils"
 	"strings"
 )
 
@@ -33,7 +34,13 @@ func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {
 	default:
 		im.table = im.TableName(table)
 	}
-	im.columns = append(im.columns, columns...)
+	ei := utils.GetEntityInfo(table)
+	if len(columns) == 0 {
+		im.columns = append(im.columns, ei.Columns...)
+		im.args = append(im.args, utils.GetFieldValues(table, ei.Fields)...)
+	} else {
+		im.columns = append(im.columns, columns...)
+	}
 	return im
 }
 
@@ -91,15 +98,19 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 	sb.WriteString("INSERT INTO ")
 	sb.WriteString(im.table)
 	sb.WriteString(" ")
-	if len(im.columns) > 0 {
+	cL := len(im.columns)
+	if cL > 0 {
 		sb.WriteString("(")
 		for i, column := range im.columns {
 			if column[0] != '`' {
-				sb.WriteString("`" + column + "`,")
+				sb.WriteString("`" + column + "`")
+				if i != cL-1 {
+					sb.WriteRune(',')
+				}
 				continue
 			}
 			sb.WriteString(column)
-			if i != len(im.columns)-1 {
+			if i != cL-1 {
 				sb.WriteRune(',')
 			}
 		}
@@ -138,9 +149,7 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 				}
 			}
 		}
-		if L <= 0 {
-			sb.WriteRune(')')
-		}
+		sb.WriteRune(')')
 	} else if im.batchArgs != nil {
 		sb.WriteString("VALUES (")
 		l := len(im.batchArgs[0])
@@ -152,6 +161,7 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 			}
 			sb.WriteRune('?')
 		}
+		sb.WriteRune(')')
 	}
 	if im.sets != nil && len(im.sets) > 0 {
 		sb.WriteString("ON DUPLICATE KEY UPDATE ")

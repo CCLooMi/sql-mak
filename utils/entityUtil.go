@@ -6,6 +6,7 @@ type EntityInfo struct {
 	TableName string
 	Fields    []string
 	Columns   []string
+	Tags      []reflect.StructTag
 	FCMap     map[string]string
 	CFMap     map[string]string
 }
@@ -14,35 +15,39 @@ var infoCache = make(map[string]*EntityInfo)
 var nameCache = make(map[string]string)
 
 // 传入结构体指针或结构体，返回实体信息
-func GetEntityInfo(table interface{}) *EntityInfo {
+func GetEntityInfo(table interface{}) EntityInfo {
 	tableName := TableName(table)
 	ei := infoCache[tableName]
 	if ei != nil {
-		return ei
+		return *ei
 	}
-
 	fields := GetFields(table)
-	fnames := make([]string, len(fields))
+	fL := len(fields)
+	fnames := make([]string, fL)
 	fcmap := make(map[string]string)
 	cfmap := make(map[string]string)
-	cols := make([]string, len(fields))
-	for i := 0; i < len(fields); i++ {
-		fn := fields[i].Name
-		cn := getTableColumnName(fields[i])
+	cols := make([]string, fL)
+	tags := make([]reflect.StructTag, fL)
+	for i := 0; i < fL; i++ {
+		fi := fields[i]
+		fn := fi.Name
+		cn := getTableColumnName(fi)
 		fcmap[fn] = cn
 		cfmap[cn] = fn
 		fnames[i] = fn
 		cols[i] = cn
+		tags[i] = fi.Tag
 	}
 	ei = &EntityInfo{
 		TableName: tableName,
 		Fields:    fnames,
 		Columns:   cols,
+		Tags:      tags,
 		FCMap:     fcmap,
 		CFMap:     cfmap,
 	}
 	infoCache[tableName] = ei
-	return ei
+	return *ei
 }
 func getTableColumnName(field reflect.StructField) string {
 	name := field.Tag.Get("column")
@@ -133,7 +138,7 @@ func GetFields(o interface{}) []reflect.StructField {
 	return fds
 }
 
-func GetFieldValue(o interface{}, field reflect.StructField) interface{} {
+func GetFieldValue(o interface{}, field string) interface{} {
 	// 将interface{}类型转换为具体的结构体类型
 	value := reflect.ValueOf(o)
 	// 如果o是指针类型，则获取指针所指向的元素
@@ -141,7 +146,7 @@ func GetFieldValue(o interface{}, field reflect.StructField) interface{} {
 		value = value.Elem()
 	}
 	// 获取指定字段的值
-	fieldValue := value.FieldByName(field.Name)
+	fieldValue := value.FieldByName(field)
 	// 返回字段的值
 	return fieldValue.Interface()
 }
@@ -157,7 +162,7 @@ func GetFieldValueByIndex(o interface{}, index int) interface{} {
 	// 返回字段的值
 	return fieldValue.Interface()
 }
-func GetFieldValues(o interface{}, fields []reflect.StructField) []interface{} {
+func GetFieldValues(o interface{}, fields []string) []interface{} {
 	// 将interface{}类型转换为具体的结构体类型
 	value := reflect.ValueOf(o)
 	// 如果o是指针类型选拿指针所指向的元素
@@ -167,39 +172,7 @@ func GetFieldValues(o interface{}, fields []reflect.StructField) []interface{} {
 	// 获取指定字段的值
 	fieldValues := make([]interface{}, len(fields))
 	for i := 0; i < len(fields); i++ {
-		fieldValues[i] = value.FieldByName(fields[i].Name).Interface()
-	}
-	// 返回字段的值
-	return fieldValues
-}
-
-func GetFieldValuesByIndexs(o interface{}, indexs []int) []interface{} {
-	// 将interface{}类型转换为具体的结构体类型
-	value := reflect.ValueOf(o)
-	// 如果o是指针类型选拿指针所指向的元素
-	if value.Kind() == reflect.Ptr {
-		value = value.Elem()
-	}
-	// 获取指定字段的值
-	fieldValues := make([]interface{}, len(indexs))
-	for i := 0; i < len(indexs); i++ {
-		fieldValues[i] = value.Field(indexs[i]).Interface()
-	}
-	// 返回字段的值
-	return fieldValues
-}
-
-func GetNFieldValues(o interface{}, n int) []interface{} {
-	// 将interface{}类型转换为具体的结构体类型
-	value := reflect.ValueOf(o)
-	// 如果o是指针类型选拿指针所指向的元素
-	if value.Kind() == reflect.Ptr {
-		value = value.Elem()
-	}
-	// 获取n个字段的值
-	fieldValues := make([]interface{}, n)
-	for i := 0; i < n; i++ {
-		fieldValues[i] = value.Field(i).Interface()
+		fieldValues[i] = value.FieldByName(fields[i]).Interface()
 	}
 	// 返回字段的值
 	return fieldValues
