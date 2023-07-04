@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+func TestEntityInfo(t *testing.T) {
+	ei := utils.GetEntityInfo(&entity.User{})
+	t.Log(ei.TableName, ei.Columns, ei.Fields, ei.FCMap, ei.CFMap)
+}
+
 func TestTableName(t *testing.T) {
 	u1 := utils.TableName(entity.User{})
 	u2 := utils.TableName(&entity.User{})

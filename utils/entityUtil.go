@@ -108,16 +108,17 @@ func GetFieldNames(o interface{}) []string {
 }
 func GetFields(o interface{}) []reflect.StructField {
 	t := reflect.TypeOf(o)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+		//解引用
+		o = reflect.ValueOf(o).Elem().Interface()
+	}
 	fds := make([]reflect.StructField, 0)
 	for i := 0; i < t.NumField(); i++ {
 		fd := t.Field(i)
 		if fd.Type.Kind() == reflect.Struct {
-			// 如果字段是结构体类型，需要判断是否是指针类型
-			if fd.Type.Kind() == reflect.Ptr {
-				// 如果是指针类型，需要解引用后再递归调用
-				fds = append(fds, GetFields(reflect.ValueOf(o).Field(i).Elem().Interface())...)
-			} else if fd.Anonymous {
-				// 如果是匿名结构体类型，直接递归调用
+			// 如果是匿名结构体类型，直接递归调用
+			if fd.Anonymous {
 				fds = append(fds, GetFields(reflect.ValueOf(o).Field(i).Interface())...)
 			} else {
 				fds = append(fds, fd)
