@@ -14,7 +14,7 @@ type SQLSMExecutorChild interface {
 	GetResultAsMap() map[string]interface{}
 	GetResultAsMapList() []map[string]interface{}
 	ExtractorResultSet(rse ResultSetExtractor) interface{}
-	ExtractorRows(rse RowsExtractor) error
+	ExtractorResultTo(out interface{})
 	Count() int64
 }
 

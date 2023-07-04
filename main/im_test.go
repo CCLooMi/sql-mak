@@ -12,32 +12,40 @@ import (
 	"time"
 )
 
+func TestExtractTo(t *testing.T) {
+	sm := mysql.SELECT("*").
+		FROM("users", "u")
+	us := make([]*entity.User, 0)
+	sm.Execute(mysql.MYDB).ExtractorResultTo(&us)
+	t.Log(us)
+}
 func TestSelectStruct(t *testing.T) {
 	sm := mysql.SELECT("*").
-		FROM("users", "u").
-		Execute(mysql.MYDB)
+		FROM("users", "u")
 	ei := utils.GetEntityInfo(&entity.User{})
 	us := make([]*entity.User, 0)
-	sm.ExtractorRows(god.RowsExtractor(func(columns *[]string, rs *sql.Rows) {
-		u := &entity.User{}
-		cL := len(*columns)
-		// 创建用于存储结果的切片
-		values := make([]interface{}, cL)
-		fields := reflect.ValueOf(u).Elem()
-		for i := range values {
-			fi := ei.CFMap[(*columns)[i]]
-			t.Log(fi)
-			fv := fields.FieldByName(fi)
-			if fv.CanAddr() {
-				values[i] = fv.Addr().Interface()
-			} else {
-				values[i] = nil
+	sm.Execute(mysql.MYDB).
+		ExtractorResultSet(god.ResultSetExtractor(func(rs *sql.Rows) interface{} {
+			columns, _ := rs.Columns()
+			u := &entity.User{}
+			cL := len(columns)
+			// 创建用于存储结果的切片
+			values := make([]interface{}, cL)
+			fields := reflect.ValueOf(u).Elem()
+			for i := range values {
+				fi := ei.CFMap[columns[i]]
+				t.Log(fi)
+				fv := fields.FieldByName(fi)
+				if fv.CanAddr() {
+					values[i] = fv.Addr().Interface()
+				} else {
+					values[i] = nil
+				}
 			}
-		}
-		rs.Scan(values...)
-		us = append(us, u)
-	}))
-
+			rs.Scan(values...)
+			us = append(us, u)
+			return us
+		}))
 	t.Log(us)
 }
 func TestEntityInfo(t *testing.T) {

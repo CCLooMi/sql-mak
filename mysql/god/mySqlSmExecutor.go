@@ -2,6 +2,8 @@ package god
 
 import (
 	"database/sql"
+	"reflect"
+	"sql-mak/utils"
 )
 
 type MySQLSMExecutor struct {
@@ -68,27 +70,59 @@ func (exe *MySQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface
 	return rse(rows)
 }
 
-func (exe *MySQLSMExecutor) ExtractorRows(rse RowsExtractor) error {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
-	if err != nil {
-		return err
-	}
-	rows, err := stmp.Query(exe.God.Args()...)
-	if err != nil {
-		return err
-	}
-	// Get column names
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-	defer rows.Close() // finally close rows
-	// Iterate over rows
-	for rows.Next() {
-		rse(&columns, rows)
-	}
-	return nil
+func (e *MySQLSMExecutor) ExtractorResultTo(out interface{}) {
+	e.ExtractorResultSet(func(rs *sql.Rows) interface{} {
+		t := reflect.TypeOf(out)
+		//判断out是不是指针
+		if t.Kind() == reflect.Ptr {
+			t = t.Elem()
+		}
+		//判断out是不是数组
+		if t.Kind() == reflect.Slice {
+			//获取数组中元素类型
+			t = t.Elem()
+			//创建一个切片，用于存储结果
+			slice := reflect.MakeSlice(reflect.SliceOf(t), 0, 0)
+			for rs.Next() {
+				//创建一个新的元素实例
+				elem := reflect.New(t).Elem()
+				//将rs的结果扫描到elem中
+				rowsTo(rs, elem)
+				//将elem添加到切片中
+				slice = reflect.Append(slice, elem)
+			}
+			//将切片赋值给out
+			reflect.ValueOf(out).Elem().Set(slice)
+		} else {
+			//将rs的结果扫描到out中
+			rowsTo(rs, reflect.ValueOf(out).Elem())
+		}
+		return nil
+	})
 }
+
+func rowsTo(rs *sql.Rows, out reflect.Value) {
+	ei := utils.GetEntityInfo(out.Type())
+	columns, _ := rs.Columns()
+	cL := len(columns)
+	//判断out是不是指针
+	if out.Kind() == reflect.Ptr {
+		out = out.Elem()
+	}
+	// 创建用于存储结果的切片
+	values := make([]interface{}, cL)
+	for i := range values {
+		fi := ei.CFMap[columns[i]]
+		fv := out.FieldByName(fi)
+		if fv.CanAddr() {
+			values[i] = fv.Addr().Interface()
+		} else {
+			values[i] = nil
+		}
+	}
+	rs.Scan(values...)
+}
+
 func (exe *MySQLSMExecutor) Count() int64 {
 	stmp, err := exe.MDB.Prepare(exe.God.Sql())
 	if err != nil {

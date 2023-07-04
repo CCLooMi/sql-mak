@@ -12,7 +12,6 @@ type SQLExecutor struct {
 }
 
 type ResultSetExtractor func(rs *sql.Rows) interface{}
-type RowsExtractor func(columns *[]string, rs *sql.Rows)
 
 func NewSQLExecutor(god SQLGod) *SQLExecutor {
 	return &SQLExecutor{
