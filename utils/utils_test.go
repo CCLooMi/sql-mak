@@ -7,10 +7,25 @@ import (
 )
 
 func TestCreateValue(t *testing.T) {
-	tp := reflect.TypeOf(1)
-	v := reflect.New(tp)
-	v.Addr().Set(reflect.ValueOf(2))
-	fmt.Println(v)
+	a := 1
+	b := &a
+	c := &b
+	d := []interface{}{a, b, c}
+	dt := GetValueType(&d)
+	fmt.Println(dt)
+	v := reflect.New(dt)
+	fmt.Println(v.Type())
+	dt = reflect.SliceOf(dt.Elem())
+	fmt.Println(dt)
+	dtv := reflect.MakeSlice(dt, 2, 2)
+	dtv.Index(1).Set(reflect.ValueOf(9))
+	fmt.Println(dtv.Interface())
+	fmt.Println(dtv.Type())
+
+	dv := reflect.ValueOf(d)
+	fmt.Println(dv.Type())
+	dv.Index(0).Set(reflect.ValueOf(9))
+	fmt.Println(d[0], GetValue(d[1]), GetValue(d[2]))
 }
 func TestSetValue(t *testing.T) {
 	a := 1
@@ -29,7 +44,10 @@ func TestGetType(t *testing.T) {
 	a := 1
 	b := &a
 	c := &b
+	d := []interface{}{a, b, c}
 	fmt.Println(GetValueType(a))
 	fmt.Println(GetValueType(b))
 	fmt.Println(GetValueType(c))
+	fmt.Println(GetValueType(d))
+	fmt.Println(GetValueType(&d))
 }
