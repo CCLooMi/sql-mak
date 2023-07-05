@@ -2,9 +2,16 @@ package utils
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
+func TestCreateValue(t *testing.T) {
+	tp := reflect.TypeOf(1)
+	v := reflect.New(tp)
+	v.Addr().Set(reflect.ValueOf(2))
+	fmt.Println(v)
+}
 func TestSetValue(t *testing.T) {
 	a := 1
 	b := &a
