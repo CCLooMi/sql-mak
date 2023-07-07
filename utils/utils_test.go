@@ -1,26 +1,45 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"sql-mak/mysql/entity"
 	"testing"
 )
 
-func TestCreateStruct(t *testing.T) {
-	u := &entity.User{}
-	u = nil
-	fmt.Println(reflect.TypeOf(u))
-	v := GetValue(u)
-	if v == nil {
-		fmt.Println("nil")
+func TestCreateSlice(t *testing.T) {
+	var uList = &[]*entity.User{}
+	lsType := GetValueType(uList)
+	lsValue := GetReflectValue(uList)
+	fmt.Println(lsType, lsValue.Type())
+	//判断lsType是否是数组
+	if lsType.Kind() == reflect.Slice {
+		//获取数组中元素类型
+		eleType := GetType(lsType.Elem())
+		fmt.Println(eleType)
+		//创建eleType实例
+		ele := reflect.New(eleType)
+		SetFValues(ele, &[]string{"Username", "Password"}, &[]interface{}{"Seemie", "123456"})
+		fmt.Println(ele.Type())
+		//在lsValue中添加元素ele
+		if lsType.Elem().Kind() == reflect.Ptr {
+			lsValue.Set(reflect.Append(lsValue, ele))
+		} else {
+			lsValue.Set(reflect.Append(lsValue, ele.Elem()))
+		}
+		//print uList为json string
+		fmt.Println(toJSONString(uList))
 	}
-	tp := GetValueType(u)
-	fmt.Println(tp)
-	tv := reflect.New(tp)
-	fmt.Println(tv.Type().String())
-	reflect.ValueOf(u).Set(tv)
-	fmt.Println(u)
+}
+func toJSONString(v interface{}) string {
+	b, _ := json.Marshal(v)
+	return string(b)
+}
+func TestCreateStruct(t *testing.T) {
+	var u = &entity.User{}
+	SetFValues(reflect.ValueOf(u), &[]string{"Username", "Password"}, &[]interface{}{"Seemie", "123456"})
+	fmt.Println(toJSONString(u))
 }
 func TestCreateValue(t *testing.T) {
 	a := 1
@@ -41,20 +60,20 @@ func TestCreateValue(t *testing.T) {
 	dv := reflect.ValueOf(d)
 	fmt.Println(dv.Type())
 	dv.Index(0).Set(reflect.ValueOf(9))
-	fmt.Println(d[0], GetValue(d[1]), GetValue(d[2]))
+	fmt.Println(d[0], GetIValue(d[1]), GetIValue(d[2]))
 }
 func TestSetValue(t *testing.T) {
 	a := 1
 	b := &a
 	c := &b
-	SetValue(a, 2)
-	fmt.Println(GetValue(a), GetValue(b), GetValue(c))
-	SetValue(&a, 2)
-	fmt.Println(GetValue(a), GetValue(b), GetValue(c))
-	SetValue(b, 3)
-	fmt.Println(GetValue(a), GetValue(b), GetValue(c))
-	SetValue(c, 4)
-	fmt.Println(GetValue(a), GetValue(b), GetValue(c))
+	SetIValue(a, 2)
+	fmt.Println(GetIValue(a), GetIValue(b), GetIValue(c))
+	SetIValue(&a, 2)
+	fmt.Println(GetIValue(a), GetIValue(b), GetIValue(c))
+	SetIValue(b, 3)
+	fmt.Println(GetIValue(a), GetIValue(b), GetIValue(c))
+	SetIValue(c, 4)
+	fmt.Println(GetIValue(a), GetIValue(b), GetIValue(c))
 }
 func TestGetType(t *testing.T) {
 	a := 1
