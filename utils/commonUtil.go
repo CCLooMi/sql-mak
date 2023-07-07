@@ -27,8 +27,15 @@ func SetValue(o interface{}, v interface{}) {
 // 递归获取指针的值
 func GetValue(o interface{}) interface{} {
 	ov := reflect.ValueOf(o)
+	if ov.IsNil() {
+		return nil
+	}
 	for ov.Type().Kind() == reflect.Ptr {
 		ov = ov.Elem()
+		//判断ov是否为nil
+		if ov.IsNil() {
+			return nil
+		}
 	}
 	return ov.Interface()
 }

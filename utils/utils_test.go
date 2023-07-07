@@ -3,9 +3,25 @@ package utils
 import (
 	"fmt"
 	"reflect"
+	"sql-mak/mysql/entity"
 	"testing"
 )
 
+func TestCreateStruct(t *testing.T) {
+	u := &entity.User{}
+	u = nil
+	fmt.Println(reflect.TypeOf(u))
+	v := GetValue(u)
+	if v == nil {
+		fmt.Println("nil")
+	}
+	tp := GetValueType(u)
+	fmt.Println(tp)
+	tv := reflect.New(tp)
+	fmt.Println(tv.Type().String())
+	reflect.ValueOf(u).Set(tv)
+	fmt.Println(u)
+}
 func TestCreateValue(t *testing.T) {
 	a := 1
 	b := &a
