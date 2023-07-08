@@ -92,13 +92,18 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 	if outType.Kind() == reflect.Slice {
 		eleType := utils.GetType(outType.Elem())
 		var ei utils.EntityInfo
+		var fnames []string
 		for rs.Next() {
 			ele := reflect.New(eleType)
 			if reflect.ValueOf(ei).IsZero() {
 				ei = utils.GetEntityInfo(ele.Elem().Interface())
+				fnames = make([]string, cL)
+				for i, col := range columns {
+					fnames[i] = ei.CFMap[col]
+				}
 			}
 			rs.Scan(values...)
-			utils.SetFValues(ele, &ei.Fields, &values)
+			utils.SetFValues(ele, &fnames, &values)
 			if outType.Elem().Kind() == reflect.Ptr {
 				out.Set(reflect.Append(out, ele))
 			} else {
@@ -108,9 +113,13 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 		return
 	}
 	ei := utils.GetEntityInfo(out.Interface())
+	fnames := make([]string, cL)
+	for i, col := range columns {
+		fnames[i] = ei.CFMap[col]
+	}
 	for rs.Next() {
 		rs.Scan(values...)
-		utils.SetFValues(out, &ei.Fields, &values)
+		utils.SetFValues(out, &fnames, &values)
 	}
 }
 
