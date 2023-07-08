@@ -81,11 +81,11 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 	columns, _ := rs.Columns()
 	cL := len(columns)
 
-	values := make([]interface{}, cL)
-	for i := range values {
-		var val interface{}
-		values[i] = &val
-	}
+	// values := make([]interface{}, cL)
+	// for i := range values {
+	// 	var val interface{}
+	// 	values[i] = &val
+	// }
 
 	outType := utils.GetType(out.Type())
 	out = utils.GetValue(out)
@@ -102,8 +102,9 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 					fnames[i] = ei.CFMap[col]
 				}
 			}
-			rs.Scan(values...)
-			utils.SetFValues(ele, &fnames, &values)
+			// rs.Scan(values...)
+			// utils.SetFValues(ele, &fnames, &values)
+			utils.SetValuesWithRows(ele, &fnames, rs)
 			if outType.Elem().Kind() == reflect.Ptr {
 				out.Set(reflect.Append(out, ele))
 			} else {
@@ -118,8 +119,9 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 		fnames[i] = ei.CFMap[col]
 	}
 	for rs.Next() {
-		rs.Scan(values...)
-		utils.SetFValues(out, &fnames, &values)
+		// rs.Scan(values...)
+		// utils.SetFValues(out, &fnames, &values)
+		utils.SetValuesWithRows(out, &fnames, rs)
 	}
 }
 

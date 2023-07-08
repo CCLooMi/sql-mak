@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"log"
 	"reflect"
 )
@@ -27,6 +28,20 @@ func SetValue(ov reflect.Value, v interface{}) {
 	}
 	if ov.CanAddr() {
 		ov.Set(reflect.ValueOf(v))
+	}
+}
+
+// 设置指针的值的属性值
+func SetValuesWithRows(ov reflect.Value, fields *[]string, rs *sql.Rows) {
+	for ov.Type().Kind() == reflect.Ptr {
+		ov = ov.Elem()
+	}
+	if ov.CanAddr() {
+		values := make([]interface{}, len(*fields))
+		for i, fi := range *fields {
+			values[i] = ov.FieldByName(fi).Addr().Interface()
+		}
+		rs.Scan(values...)
 	}
 }
 
@@ -66,9 +81,11 @@ func SetValues(ov reflect.Value, fvs ...interface{}) {
 		for i := 0; i < vl; i += 2 {
 			field = ov.FieldByName(fvs[i].(string))
 			targetType = field.Type()
-			value = reflect.ValueOf(fvs[i+1])
+			value = GetValue(reflect.ValueOf(fvs[i+1]))
 			if value.Type().ConvertibleTo(targetType) {
 				field.Set(value.Convert(targetType))
+			} else {
+				log.Printf("Can't convert %s to %s", value.Type(), targetType)
 			}
 		}
 	}

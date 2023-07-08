@@ -10,12 +10,12 @@ import (
 var MYDB *sql.DB
 
 func init() {
-	_db, err := sql.Open("mysql", "root:apple@tcp(127.0.0.1:3308)/wios")
+	_db, err := sql.Open("mysql", "root:apple@tcp(127.0.0.1:3308)/wios?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
 		panic(err)
 	}
 	if err = _db.Ping(); err != nil {
-		_db, _ := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test")
+		_db, _ := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local")
 		if err = _db.Ping(); err != nil {
 			panic(err)
 		}
