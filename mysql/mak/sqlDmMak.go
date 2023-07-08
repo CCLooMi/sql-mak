@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"database/sql"
@@ -6,8 +6,8 @@ import (
 )
 
 type SQLDM struct {
-	AbstractSQLGod
-	AbstractSQLGodChild
+	AbstractSQLMak
+	AbstractSQLMakChild
 	table string
 	where string
 	andor []string
@@ -17,12 +17,12 @@ func NewSQLDM() *SQLDM {
 	dm := &SQLDM{
 		where: "WHERE 1=1",
 	}
-	a := dm.toAbstractSQLGodChild()
-	dm.AbstractSQLGod = *NewAbstractSQLGod(&a)
+	a := dm.toAbstractSQLMakChild()
+	dm.AbstractSQLMak = *NewAbstractSQLMak(&a)
 	return dm
 }
 
-func (dm *SQLDM) toAbstractSQLGodChild() AbstractSQLGodChild {
+func (dm *SQLDM) toAbstractSQLMakChild() AbstractSQLMakChild {
 	return dm
 }
 func (dm *SQLDM) FROM(table interface{}) *SQLDM {

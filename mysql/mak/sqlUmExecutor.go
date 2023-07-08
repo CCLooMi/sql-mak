@@ -1,4 +1,4 @@
-package god
+package mak
 
 import "database/sql"
 
@@ -13,7 +13,7 @@ type SQLUMExecutorChild interface {
 
 func NewSQLUMExecutor(um *SQLUM) *SQLUMExecutor {
 	exe := &SQLUMExecutor{}
-	god := um.toSQLGod()
-	exe.SQLExecutor = *NewSQLExecutor(god)
+	mak := um.toSQLMak()
+	exe.SQLExecutor = *NewSQLExecutor(mak)
 	return exe
 }

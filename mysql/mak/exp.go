@@ -1,4 +1,4 @@
-package god
+package mak
 
 type EXP struct {
 	exp  interface{}

@@ -6,8 +6,6 @@ import (
 	"reflect"
 )
 
-var lg = log.Default()
-
 // 递归获取指针的值类型
 func GetType(t reflect.Type) reflect.Type {
 	for t.Kind() == reflect.Ptr {

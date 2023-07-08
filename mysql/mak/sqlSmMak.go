@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"database/sql"
@@ -8,8 +8,8 @@ import (
 )
 
 type SQLSM struct {
-	AbstractSQLGod
-	AbstractSQLGodChild
+	AbstractSQLMak
+	AbstractSQLMakChild
 	columns      []interface{}
 	columnAlias  []string
 	tables       []interface{}
@@ -30,11 +30,11 @@ func NewSQLSM() *SQLSM {
 		columnAlias: make([]string, 0),
 		tables:      make([]interface{}, 0),
 	}
-	a := sm.toAbstractSQLGodChild()
-	sm.AbstractSQLGod = *NewAbstractSQLGod(&a)
+	a := sm.toAbstractSQLMakChild()
+	sm.AbstractSQLMak = *NewAbstractSQLMak(&a)
 	return sm
 }
-func (sm *SQLSM) toAbstractSQLGodChild() AbstractSQLGodChild {
+func (sm *SQLSM) toAbstractSQLMakChild() AbstractSQLMakChild {
 	return sm
 }
 

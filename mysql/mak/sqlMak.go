@@ -1,6 +1,6 @@
-package god
+package mak
 
-type SQLGod interface {
+type SQLMak interface {
 	Sql() string
 	CountSql() string
 	Args() []interface{}

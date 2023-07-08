@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"database/sql"
@@ -7,8 +7,8 @@ import (
 )
 
 type SQLIM struct {
-	AbstractSQLGod
-	AbstractSQLGodChild
+	AbstractSQLMak
+	AbstractSQLMakChild
 	table    string
 	columns  []string
 	valuesSM *SQLSM
@@ -20,11 +20,11 @@ func NewSQLIM() *SQLIM {
 	im := &SQLIM{
 		columns: make([]string, 0),
 	}
-	a := im.toAbstractSQLGodChild()
-	im.AbstractSQLGod = *NewAbstractSQLGod(&a)
+	a := im.toAbstractSQLMakChild()
+	im.AbstractSQLMak = *NewAbstractSQLMak(&a)
 	return im
 }
-func (im *SQLIM) toAbstractSQLGodChild() AbstractSQLGodChild {
+func (im *SQLIM) toAbstractSQLMakChild() AbstractSQLMakChild {
 	return im
 }
 func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {

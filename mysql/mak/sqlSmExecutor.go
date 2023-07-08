@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"database/sql"
@@ -35,8 +35,8 @@ type ByPageFilter interface {
 
 func NewSQLSMExecutor(sm *SQLSM) *SQLSMExecutor {
 	sme := &SQLSMExecutor{SM: sm}
-	god := sm.toSQLGod()
-	sme.SQLExecutor = *NewSQLExecutor(god)
+	mak := sm.toSQLMak()
+	sme.SQLExecutor = *NewSQLExecutor(mak)
 	return sme
 }
 

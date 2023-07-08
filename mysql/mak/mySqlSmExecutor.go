@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"database/sql"
@@ -18,22 +18,22 @@ func NewMySQLSMExecutor(sm *SQLSM, mdb *sql.DB) *MySQLSMExecutor {
 }
 
 func (exe *MySQLSMExecutor) INSERT_INTO_TABLExtractorResultSet(rse ResultSetExtractor) interface{} {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
 		panic(err)
 	}
-	rows, err := stmp.Query(exe.God.Args()...)
+	rows, err := stmp.Query(exe.Mak.Args()...)
 	if err != nil {
 		panic(err)
 	}
 	return rse(rows)
 }
 func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
 		panic(err)
 	}
-	rows, err := stmp.Query(exe.God.Args()...)
+	rows, err := stmp.Query(exe.Mak.Args()...)
 	if err != nil {
 		panic(err)
 	}
@@ -44,11 +44,11 @@ func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	return m
 }
 func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
 		panic(err)
 	}
-	rows, err := stmp.Query(exe.God.Args()...)
+	rows, err := stmp.Query(exe.Mak.Args()...)
 	if err != nil {
 		panic(err)
 	}
@@ -59,11 +59,11 @@ func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
 	return list
 }
 func (exe *MySQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
 		panic(err)
 	}
-	rows, err := stmp.Query(exe.God.Args()...)
+	rows, err := stmp.Query(exe.Mak.Args()...)
 	if err != nil {
 		panic(err)
 	}
@@ -127,11 +127,11 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 }
 
 func (exe *MySQLSMExecutor) Count() int64 {
-	stmp, err := exe.MDB.Prepare(exe.God.Sql())
+	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
 		panic(err)
 	}
-	rows, err := stmp.Query(exe.God.Args()...)
+	rows, err := stmp.Query(exe.Mak.Args()...)
 	if err != nil {
 		panic(err)
 	}

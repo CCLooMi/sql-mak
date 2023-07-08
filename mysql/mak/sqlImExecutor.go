@@ -1,4 +1,4 @@
-package god
+package mak
 
 type SQLIMExecutor struct {
 	SQLExecutor
@@ -7,7 +7,7 @@ type SQLIMExecutor struct {
 
 func NewSQLIMExecutor(im *SQLIM) *SQLIMExecutor {
 	exe := &SQLIMExecutor{}
-	god := im.toSQLGod()
-	exe.SQLExecutor = *NewSQLExecutor(god)
+	mak := im.toSQLMak()
+	exe.SQLExecutor = *NewSQLExecutor(mak)
 	return exe
 }

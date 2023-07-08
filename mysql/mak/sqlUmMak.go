@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"database/sql"
@@ -9,8 +9,8 @@ import (
 )
 
 type SQLUM struct {
-	AbstractSQLGod
-	AbstractSQLGodChild
+	AbstractSQLMak
+	AbstractSQLMakChild
 	tables []string
 	joins  []interface{}
 	sets   []string
@@ -25,12 +25,12 @@ func NewSQLUM() *SQLUM {
 		tables: make([]string, 0),
 		sets:   make([]string, 0),
 	}
-	a := um.toAbstractSQLGodChild()
-	um.AbstractSQLGod = *NewAbstractSQLGod(&a)
+	a := um.toAbstractSQLMakChild()
+	um.AbstractSQLMak = *NewAbstractSQLMak(&a)
 	return um
 }
 
-func (um *SQLUM) toAbstractSQLGodChild() AbstractSQLGodChild {
+func (um *SQLUM) toAbstractSQLMakChild() AbstractSQLMakChild {
 	return um
 }
 func (um *SQLUM) UPDATE(table interface{}, alias string) *SQLUM {

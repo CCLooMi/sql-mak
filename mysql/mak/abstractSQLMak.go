@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"log"
@@ -7,18 +7,18 @@ import (
 	"strings"
 )
 
-type AbstractSQLGod struct {
-	SQLGod
+type AbstractSQLMak struct {
+	SQLMak
 	Log          *log.Logger
 	logSql       bool
 	args         []interface{}
 	batchArgs    [][]interface{}
 	hasSubSelect bool
-	child        AbstractSQLGodChild
+	child        AbstractSQLMakChild
 }
 
 // 定义子类需要实现的接口
-type AbstractSQLGodChild interface {
+type AbstractSQLMakChild interface {
 	_sql(sb *strings.Builder)
 	_countSQL(sb *strings.Builder)
 }
@@ -35,8 +35,8 @@ type B struct {
 	alias string
 }
 
-func NewAbstractSQLGod(child *AbstractSQLGodChild) *AbstractSQLGod {
-	agod := &AbstractSQLGod{
+func NewAbstractSQLMak(child *AbstractSQLMakChild) *AbstractSQLMak {
+	agod := &AbstractSQLMak{
 		Log:          log.Default(),
 		logSql:       true,
 		args:         make([]interface{}, 0),
@@ -46,11 +46,11 @@ func NewAbstractSQLGod(child *AbstractSQLGodChild) *AbstractSQLGod {
 	return agod
 }
 
-func (g *AbstractSQLGod) TableName(table interface{}) string {
+func (g *AbstractSQLMak) TableName(table interface{}) string {
 	return utils.TableName(table)
 }
 
-func (g *AbstractSQLGod) IF(condition bool, fs ...func(g *AbstractSQLGod)) *AbstractSQLGod {
+func (g *AbstractSQLMak) IF(condition bool, fs ...func(g *AbstractSQLMak)) *AbstractSQLMak {
 	if len(fs) == 0 {
 		return g
 	}
@@ -64,7 +64,7 @@ func (g *AbstractSQLGod) IF(condition bool, fs ...func(g *AbstractSQLGod)) *Abst
 	return g
 }
 
-func (g *AbstractSQLGod) SWITCH(i int, fs ...func(g *AbstractSQLGod)) *AbstractSQLGod {
+func (g *AbstractSQLMak) SWITCH(i int, fs ...func(g *AbstractSQLMak)) *AbstractSQLMak {
 	if i < 0 || i > len(fs)-1 {
 		return g
 	}
@@ -72,12 +72,12 @@ func (g *AbstractSQLGod) SWITCH(i int, fs ...func(g *AbstractSQLGod)) *AbstractS
 	return g
 }
 
-func (g *AbstractSQLGod) LOGSQL(b bool) *AbstractSQLGod {
+func (g *AbstractSQLMak) LOGSQL(b bool) *AbstractSQLMak {
 	g.logSql = b
 	return g
 }
 
-func (g *AbstractSQLGod) Sql() string {
+func (g *AbstractSQLMak) Sql() string {
 	var sb strings.Builder
 	g.child._sql(&sb)
 	if g.logSql {
@@ -86,7 +86,7 @@ func (g *AbstractSQLGod) Sql() string {
 	return sb.String()
 }
 
-func (g *AbstractSQLGod) CountSql() string {
+func (g *AbstractSQLMak) CountSql() string {
 	var sb strings.Builder
 	g.child._countSQL(&sb)
 	if g.logSql {
@@ -95,7 +95,7 @@ func (g *AbstractSQLGod) CountSql() string {
 	return sb.String()
 }
 
-func (g *AbstractSQLGod) Args() []interface{} {
+func (g *AbstractSQLMak) Args() []interface{} {
 	if !g.hasSubSelect {
 		return g.args
 	} else {
@@ -105,11 +105,11 @@ func (g *AbstractSQLGod) Args() []interface{} {
 	}
 }
 
-func (g *AbstractSQLGod) BatchArgs() [][]interface{} {
+func (g *AbstractSQLMak) BatchArgs() [][]interface{} {
 	return g.batchArgs
 }
 
-func (g *AbstractSQLGod) flat(args []interface{}, result *[]interface{}) {
+func (g *AbstractSQLMak) flat(args []interface{}, result *[]interface{}) {
 	for _, o := range args {
 		if reflect.TypeOf(o).Kind() != reflect.Slice {
 			*result = append(*result, o)
@@ -119,6 +119,6 @@ func (g *AbstractSQLGod) flat(args []interface{}, result *[]interface{}) {
 	}
 }
 
-func (g *AbstractSQLGod) toSQLGod() SQLGod {
+func (g *AbstractSQLMak) toSQLMak() SQLMak {
 	return g
 }

@@ -60,7 +60,7 @@ func getTableColumnName(field reflect.StructField) string {
 func TableName(table interface{}) string {
 	t := reflect.TypeOf(table)
 	name := t.Name()
-	if t.Kind() == reflect.Ptr { //指针
+	if t.Kind() == reflect.Ptr {
 		nm := nameCache[t.String()]
 		if nm != "" {
 			return nm
@@ -72,7 +72,6 @@ func TableName(table interface{}) string {
 		nameCache[t.String()] = name
 		return name
 	}
-	//获取值地址类型、
 	t = reflect.PtrTo(t)
 	nm := nameCache[t.String()]
 	if nm != "" {
@@ -115,7 +114,6 @@ func GetFields(o interface{}) []reflect.StructField {
 	t := reflect.TypeOf(o)
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
-		//解引用
 		o = reflect.ValueOf(o).Elem().Interface()
 	}
 	fds := make([]reflect.StructField, 0)
@@ -139,41 +137,29 @@ func GetFields(o interface{}) []reflect.StructField {
 }
 
 func GetFieldValue(o interface{}, field string) interface{} {
-	// 将interface{}类型转换为具体的结构体类型
 	value := reflect.ValueOf(o)
-	// 如果o是指针类型，则获取指针所指向的元素
 	if value.Kind() == reflect.Ptr {
 		value = value.Elem()
 	}
-	// 获取指定字段的值
 	fieldValue := value.FieldByName(field)
-	// 返回字段的值
 	return fieldValue.Interface()
 }
 func GetFieldValueByIndex(o interface{}, index int) interface{} {
-	// 将interface{}类型转换为具体的结构体类型
 	value := reflect.ValueOf(o)
-	// 如果o是指针类型，则获取指针所指向的元素
 	if value.Kind() == reflect.Ptr {
 		value = value.Elem()
 	}
-	// 获取指定字段的值
 	fieldValue := value.Field(index)
-	// 返回字段的值
 	return fieldValue.Interface()
 }
 func GetFieldValues(o interface{}, fields []string) []interface{} {
-	// 将interface{}类型转换为具体的结构体类型
 	value := reflect.ValueOf(o)
-	// 如果o是指针类型选拿指针所指向的元素
 	if value.Kind() == reflect.Ptr {
 		value = value.Elem()
 	}
-	// 获取指定字段的值
 	fieldValues := make([]interface{}, len(fields))
 	for i := 0; i < len(fields); i++ {
 		fieldValues[i] = value.FieldByName(fields[i]).Interface()
 	}
-	// 返回字段的值
 	return fieldValues
 }

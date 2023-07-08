@@ -1,4 +1,4 @@
-package god
+package mak
 
 import "database/sql"
 
@@ -14,23 +14,23 @@ func NewMySQLUMExecutor(um *SQLUM, mdb *sql.DB) *MySQLUMExecutor {
 }
 
 func (exe *MySQLUMExecutor) Update() sql.Result {
-	stmt, err := exe.MDB.Prepare(exe.God.Sql())
+	stmt, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
 		panic(err)
 	}
-	r, err := stmt.Exec(exe.God.Args()...)
+	r, err := stmt.Exec(exe.Mak.Args()...)
 	if err != nil {
 		panic(err)
 	}
 	return r
 }
 func (exe *MySQLUMExecutor) BatchUpdate() []sql.Result {
-	stmt, err := exe.MDB.Prepare(exe.God.Sql())
+	stmt, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
 		panic(err)
 	}
 	rs := []sql.Result{}
-	for _, ags := range exe.God.BatchArgs() {
+	for _, ags := range exe.Mak.BatchArgs() {
 		r, _ := stmt.Exec(ags...)
 		rs = append(rs, r)
 	}

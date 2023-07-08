@@ -1,4 +1,4 @@
-package god
+package mak
 
 import (
 	"database/sql"
@@ -8,14 +8,14 @@ import (
 
 type SQLExecutor struct {
 	Log *logrus.Entry
-	God SQLGod
+	Mak SQLMak
 }
 
 type ResultSetExtractor func(rs *sql.Rows) interface{}
 
-func NewSQLExecutor(god SQLGod) *SQLExecutor {
+func NewSQLExecutor(mak SQLMak) *SQLExecutor {
 	return &SQLExecutor{
 		Log: logrus.WithField("component", "SQLExecutor"),
-		God: god,
+		Mak: mak,
 	}
 }
