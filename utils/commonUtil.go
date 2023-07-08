@@ -1,17 +1,11 @@
 package utils
 
 import (
+	"log"
 	"reflect"
 )
 
-// 递归获取指针的值类型
-func GetValueType(o interface{}) reflect.Type {
-	t := reflect.TypeOf(o)
-	for t.Kind() == reflect.Ptr {
-		t = t.Elem()
-	}
-	return t
-}
+var lg = log.Default()
 
 // 递归获取指针的值类型
 func GetType(t reflect.Type) reflect.Type {
@@ -23,13 +17,7 @@ func GetType(t reflect.Type) reflect.Type {
 
 // 递归设置指针的值
 func SetIValue(o interface{}, v interface{}) {
-	ov := reflect.ValueOf(o)
-	for ov.Type().Kind() == reflect.Ptr {
-		ov = ov.Elem()
-	}
-	if ov.CanAddr() {
-		ov.Set(reflect.ValueOf(v))
-	}
+	SetValue(reflect.ValueOf(o), v)
 }
 
 // 递归设置指针的值
@@ -56,10 +44,31 @@ func SetFValues(ov reflect.Value, fields *[]string, values *[]interface{}) {
 			if i < vL {
 				field = ov.FieldByName(fi)
 				targetType = field.Type()
-				value = reflect.ValueOf((*values)[i])
+				value = GetValue(reflect.ValueOf((*values)[i]))
 				if value.Type().ConvertibleTo(targetType) {
 					field.Set(value.Convert(targetType))
+				} else {
+					log.Printf("Can't convert %s to %s", value.Type(), targetType)
 				}
+			}
+		}
+	}
+}
+func SetValues(ov reflect.Value, fvs ...interface{}) {
+	for ov.Type().Kind() == reflect.Ptr {
+		ov = ov.Elem()
+	}
+	if ov.CanAddr() {
+		vl := len(fvs)
+		var field reflect.Value
+		var targetType reflect.Type
+		var value reflect.Value
+		for i := 0; i < vl; i += 2 {
+			field = ov.FieldByName(fvs[i].(string))
+			targetType = field.Type()
+			value = reflect.ValueOf(fvs[i+1])
+			if value.Type().ConvertibleTo(targetType) {
+				field.Set(value.Convert(targetType))
 			}
 		}
 	}
@@ -67,26 +76,21 @@ func SetFValues(ov reflect.Value, fields *[]string, values *[]interface{}) {
 
 // 递归获取指针的值
 func GetReflectValue(o interface{}) reflect.Value {
-	ov := reflect.ValueOf(o)
-	for ov.Type().Kind() == reflect.Ptr {
-		ov = ov.Elem()
-	}
-	return ov
+	return GetValue(reflect.ValueOf(o))
 }
 
 // 递归获取指针的值
 func GetIValue(o interface{}) interface{} {
-	ov := reflect.ValueOf(o)
-	for ov.Type().Kind() == reflect.Ptr {
-		ov = ov.Elem()
-	}
-	return ov.Interface()
+	return GetValue(reflect.ValueOf(o)).Interface()
 }
 
 // 递归获取指针的值
 func GetValue(ov reflect.Value) reflect.Value {
 	for ov.Type().Kind() == reflect.Ptr {
 		ov = ov.Elem()
+	}
+	for ov.Type().Kind() == reflect.Interface {
+		ov = reflect.ValueOf(ov.Interface())
 	}
 	return ov
 }

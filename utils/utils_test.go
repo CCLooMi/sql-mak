@@ -10,7 +10,7 @@ import (
 
 func TestCreateSlice(t *testing.T) {
 	var uList = &[]*entity.User{}
-	lsType := GetValueType(uList)
+	lsType := GetType(reflect.TypeOf(uList))
 	lsValue := GetReflectValue(uList)
 	fmt.Println(lsType, lsValue.Type())
 	//判断lsType是否是数组
@@ -36,9 +36,11 @@ func toJSONString(v interface{}) string {
 	b, _ := json.Marshal(v)
 	return string(b)
 }
-func TestCreateStruct(t *testing.T) {
+func TestSetValues(t *testing.T) {
 	var u = &entity.User{}
 	SetFValues(reflect.ValueOf(u), &[]string{"Username", "Password"}, &[]interface{}{"Seemie", "123456"})
+	fmt.Println(toJSONString(u))
+	SetValues(reflect.ValueOf(u), "Username", "John", "Password", []byte("123456"))
 	fmt.Println(toJSONString(u))
 }
 func TestCreateValue(t *testing.T) {
@@ -46,7 +48,7 @@ func TestCreateValue(t *testing.T) {
 	b := &a
 	c := &b
 	d := []interface{}{a, b, c}
-	dt := GetValueType(&d)
+	dt := GetType(reflect.TypeOf(&d))
 	fmt.Println(dt)
 	v := reflect.New(dt)
 	fmt.Println(v.Type())
@@ -80,9 +82,9 @@ func TestGetType(t *testing.T) {
 	b := &a
 	c := &b
 	d := []interface{}{a, b, c}
-	fmt.Println(GetValueType(a))
-	fmt.Println(GetValueType(b))
-	fmt.Println(GetValueType(c))
-	fmt.Println(GetValueType(d))
-	fmt.Println(GetValueType(&d))
+	fmt.Println(GetType(reflect.TypeOf(a)))
+	fmt.Println(GetType(reflect.TypeOf(b)))
+	fmt.Println(GetType(reflect.TypeOf(c)))
+	fmt.Println(GetType(reflect.TypeOf(d)))
+	fmt.Println(GetType(reflect.TypeOf(&d)))
 }
