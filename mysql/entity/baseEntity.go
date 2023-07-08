@@ -1,10 +1,18 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/shopspring/decimal"
 )
+
+type JsonTime time.Time
+
+func (jt JsonTime) MarshalJSON() ([]byte, error) {
+	var stamp = fmt.Sprintf("\"%s\"", time.Time(jt).Format("2006-01-02 15:04:05"))
+	return []byte(stamp), nil
+}
 
 type BaseEntity interface {
 	TableName() string
@@ -16,8 +24,8 @@ type IdEntity struct {
 }
 
 type TimeEntity struct {
-	InsertedAt time.Time `orm:"not null; comment:'插入时间'" column:"inserted_at"`
-	UpdatedAt  time.Time `orm:"not null; comment:'更新时间'" column:"updated_at"`
+	InsertedAt JsonTime `orm:"not null; comment:'插入时间'" column:"inserted_at"`
+	UpdatedAt  JsonTime `orm:"not null; comment:'更新时间'" column:"updated_at"`
 }
 
 type Account struct {

@@ -71,11 +71,12 @@ func (exe *MySQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface
 	return rse(rows)
 }
 
-func (e *MySQLSMExecutor) ExtractorResultTo(out interface{}) {
+func (e *MySQLSMExecutor) ExtractorResultTo(out interface{}) *MySQLSMExecutor {
 	e.ExtractorResultSet(func(rs *sql.Rows) interface{} {
 		RowsToOut(rs, reflect.ValueOf(out))
 		return nil
 	})
+	return e
 }
 func RowsToOut(rs *sql.Rows, out reflect.Value) {
 	columns, _ := rs.Columns()
