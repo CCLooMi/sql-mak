@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"sql-mak/mysql"
-	"sql-mak/mysql/entity"
 	"testing"
+
+	"github.com/CCLooMi/sql-mak/mysql"
+	"github.com/CCLooMi/sql-mak/mysql/entity"
 
 	_ "github.com/go-sql-driver/mysql"
 )

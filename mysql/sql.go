@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"sql-mak/mysql/mak"
+	"github.com/CCLooMi/sql-mak/mysql/mak"
 )
 
 func SELECT(columns ...interface{}) *mak.SQLSM {

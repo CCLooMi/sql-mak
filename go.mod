@@ -1,4 +1,4 @@
-module sql-mak
+module github.com/CCLooMi/sql-mak
 
 go 1.20
 
