@@ -3,8 +3,9 @@ package mak
 import (
 	"log"
 	"reflect"
-	"sql-mak/utils"
 	"strings"
+
+	"github.com/CCLooMi/sql-mak/utils"
 )
 
 type AbstractSQLMak struct {

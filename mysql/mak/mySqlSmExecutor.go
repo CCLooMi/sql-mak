@@ -3,7 +3,8 @@ package mak
 import (
 	"database/sql"
 	"reflect"
-	"sql-mak/utils"
+
+	"github.com/CCLooMi/sql-mak/utils"
 )
 
 type MySQLSMExecutor struct {

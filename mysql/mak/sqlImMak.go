@@ -2,8 +2,9 @@ package mak
 
 import (
 	"database/sql"
-	"sql-mak/utils"
 	"strings"
+
+	"github.com/CCLooMi/sql-mak/utils"
 )
 
 type SQLIM struct {
