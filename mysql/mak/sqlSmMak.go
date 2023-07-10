@@ -3,7 +3,6 @@ package mak
 import (
 	"database/sql"
 	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -81,14 +80,14 @@ func (s *SQLSM) SELECT_EXP(exp *EXP, alias string) *SQLSM {
 }
 func (s *SQLSM) FROM(table interface{}, alias string) *SQLSM {
 	switch v := table.(type) {
-	case reflect.Type:
-		s.tables = append(s.tables, s.TableName(v)+" "+alias)
 	case string:
 		s.tables = append(s.tables, table.(string)+" "+alias)
 	case *SQLSM:
 		s.hasSubSelect = true
 		s.tables = append(s.tables, A{sm: table.(*SQLSM), alias: alias})
 		s.args = append(s.args, table.(*SQLSM).args...)
+	default:
+		s.tables = append(s.tables, s.TableName(v)+" "+alias)
 	}
 	return s
 }
@@ -96,14 +95,14 @@ func (s *SQLSM) FROM(table interface{}, alias string) *SQLSM {
 func (s *SQLSM) JOIN(table interface{}, alias string, args ...interface{}) *SQLSM {
 	var join string
 	switch v := table.(type) {
-	case reflect.Type:
-		join = "JOIN " + s.TableName(v) + " " + alias
 	case string:
 		join = "JOIN " + table.(string) + " " + alias
 	case *SQLSM:
 		s.hasSubSelect = true
 		s.joins = append(s.joins, []interface{}{"JOIN", A{sm: table.(*SQLSM), alias: alias}})
 		s.args = append(s.args, table.(*SQLSM).args...)
+	default:
+		join = "JOIN " + s.TableName(v) + " " + alias
 	}
 
 	if len(args) > 0 {
@@ -116,14 +115,14 @@ func (s *SQLSM) JOIN(table interface{}, alias string, args ...interface{}) *SQLS
 func (s *SQLSM) JOIN_ON(table interface{}, alias string, on string, args ...interface{}) *SQLSM {
 	var join string
 	switch v := table.(type) {
-	case reflect.Type:
-		join = "JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
 		s.hasSubSelect = true
 		s.joins = append(s.joins, []interface{}{"JOIN", A{sm: table.(*SQLSM), alias: alias}, " ON " + on})
 		s.args = append(s.args, table.(*SQLSM).args...)
+	default:
+		join = "JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	}
 
 	if len(args) > 0 {
@@ -137,14 +136,14 @@ func (s *SQLSM) JOIN_ON(table interface{}, alias string, on string, args ...inte
 func (s *SQLSM) LEFT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLSM {
 	var join string
 	switch v := table.(type) {
-	case reflect.Type:
-		join = "LEFT JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "LEFT JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
 		s.hasSubSelect = true
 		s.joins = append(s.joins, []interface{}{"LEFT JOIN ", A{sm: table.(*SQLSM), alias: alias}, " ON " + on})
 		s.args = append(s.args, table.(*SQLSM).args...)
+	default:
+		join = "LEFT JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	}
 
 	if len(args) > 0 {
@@ -158,14 +157,14 @@ func (s *SQLSM) LEFT_JOIN(table interface{}, alias string, on string, args ...in
 func (s *SQLSM) RIGHT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLSM {
 	var join string
 	switch v := table.(type) {
-	case reflect.Type:
-		join = "RIGHT JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "RIGHT JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
 		s.hasSubSelect = true
 		s.joins = append(s.joins, []interface{}{"RIGHT JOIN ", A{sm: table.(*SQLSM), alias: alias}, " ON " + on})
 		s.args = append(s.args, table.(*SQLSM).args...)
+	default:
+		join = "RIGHT JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	}
 
 	if len(args) > 0 {
@@ -179,14 +178,14 @@ func (s *SQLSM) RIGHT_JOIN(table interface{}, alias string, on string, args ...i
 func (s *SQLSM) INNER_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLSM {
 	var join string
 	switch v := table.(type) {
-	case reflect.Type:
-		join = "INNER JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	case string:
 		join = "INNER JOIN " + table.(string) + " " + alias + " ON " + on
 	case *SQLSM:
 		s.hasSubSelect = true
 		s.joins = append(s.joins, []interface{}{"INNER JOIN ", A{sm: table.(*SQLSM), alias: alias}, " ON " + on})
 		s.args = append(s.args, table.(*SQLSM).args...)
+	default:
+		join = "INNER JOIN " + s.TableName(v) + " " + alias + " ON " + on
 	}
 
 	if len(args) > 0 {

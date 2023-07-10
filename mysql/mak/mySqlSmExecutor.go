@@ -128,7 +128,7 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 }
 
 func (exe *MySQLSMExecutor) Count() int64 {
-	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	stmp, err := exe.MDB.Prepare(exe.Mak.CountSql())
 	if err != nil {
 		panic(err)
 	}
