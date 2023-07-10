@@ -2,7 +2,6 @@ package mak
 
 import (
 	"log"
-	"reflect"
 	"strings"
 
 	"github.com/CCLooMi/sql-mak/utils"
@@ -10,12 +9,12 @@ import (
 
 type AbstractSQLMak struct {
 	SQLMak
-	Log          *log.Logger
-	logSql       bool
-	args         []interface{}
-	batchArgs    [][]interface{}
-	hasSubSelect bool
-	child        AbstractSQLMakChild
+	Log        *log.Logger
+	logSql     bool
+	args       []interface{}
+	batchArgs  [][]interface{}
+	hasSubArgs bool
+	child      AbstractSQLMakChild
 }
 
 // 定义子类需要实现的接口
@@ -38,10 +37,10 @@ type B struct {
 
 func NewAbstractSQLMak(child *AbstractSQLMakChild) *AbstractSQLMak {
 	agod := &AbstractSQLMak{
-		Log:          log.Default(),
-		logSql:       true,
-		args:         make([]interface{}, 0),
-		hasSubSelect: false,
+		Log:        log.Default(),
+		logSql:     true,
+		args:       make([]interface{}, 0),
+		hasSubArgs: false,
 	}
 	agod.child = *child
 	return agod
@@ -97,7 +96,7 @@ func (g *AbstractSQLMak) CountSql() string {
 }
 
 func (g *AbstractSQLMak) Args() []interface{} {
-	if !g.hasSubSelect {
+	if !g.hasSubArgs {
 		return g.args
 	} else {
 		ags := make([]interface{}, 0)
@@ -112,11 +111,15 @@ func (g *AbstractSQLMak) BatchArgs() [][]interface{} {
 
 func (g *AbstractSQLMak) flat(args []interface{}, result *[]interface{}) {
 	for _, o := range args {
-		if reflect.TypeOf(o).Kind() != reflect.Slice {
-			*result = append(*result, o)
-		} else {
+		if _, ok := o.([]interface{}); ok {
 			g.flat(o.([]interface{}), result)
+			continue
 		}
+		if _, ok := o.(*[]interface{}); ok {
+			g.flat(*o.(*[]interface{}), result)
+			continue
+		}
+		*result = append(*result, o)
 	}
 }
 

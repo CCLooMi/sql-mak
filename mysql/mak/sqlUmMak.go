@@ -55,7 +55,7 @@ func (um *SQLUM) LEFT_JOIN(table interface{}, alias string, on string, args ...i
 		}
 		um.joins = append(um.joins, "LEFT JOIN "+tv+" "+alias+" ON "+on)
 	case *SQLSM:
-		um.hasSubSelect = true
+		um.hasSubArgs = true
 		if um.joins == nil {
 			um.joins = make([]interface{}, 0)
 		}
@@ -79,7 +79,7 @@ func (um *SQLUM) RIGHT_JOIN(table interface{}, alias string, on string, args ...
 		}
 		um.joins = append(um.joins, "RIGHT JOIN "+tv+" "+alias+" ON "+on)
 	case *SQLSM:
-		um.hasSubSelect = true
+		um.hasSubArgs = true
 		if um.joins == nil {
 			um.joins = make([]interface{}, 0)
 		}
@@ -103,7 +103,7 @@ func (um *SQLUM) INNER_JOIN(table interface{}, alias string, on string, args ...
 		}
 		um.joins = append(um.joins, "INNER JOIN "+tv+" "+alias+" ON "+on)
 	case *SQLSM:
-		um.hasSubSelect = true
+		um.hasSubArgs = true
 		if um.joins == nil {
 			um.joins = make([]interface{}, 0)
 		}
@@ -206,7 +206,7 @@ func (um *SQLUM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQ
 
 func (um *SQLUM) LIMIT(limits ...interface{}) *SQLUM {
 	if len(limits) > 0 {
-		if um.hasSubSelect {
+		if um.hasSubArgs {
 			log.Fatal("非单表更新 SQL 不能使用 LIMIT，请在子查询中使用 LIMIT 查出需要更新的数据再使用 UPDATE 进行更新（无需 LIMIT）")
 		}
 		sb := strings.Builder{}

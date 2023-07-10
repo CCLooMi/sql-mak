@@ -56,7 +56,7 @@ func (im *SQLIM) VALUES(values ...interface{}) *SQLIM {
 }
 
 func (im *SQLIM) VALUES_SM(sm *SQLSM) *SQLIM {
-	im.hasSubSelect = true
+	im.hasSubArgs = true
 	im.valuesSM = sm
 	if len(im.columns) == 0 {
 		im.columns = append(im.columns, sm.ColumnAlias()...)
@@ -78,6 +78,7 @@ func (im *SQLIM) SET(set string, args ...interface{}) *SQLIM {
 		if im.setArgs == nil {
 			im.setArgs = make([]interface{}, 0)
 			im.args = append(im.args, &im.setArgs)
+			im.hasSubArgs = true
 		}
 		im.setArgs = append(im.setArgs, args...)
 	}
