@@ -36,9 +36,12 @@ func init() {
 func TestSelectExtract(t *testing.T) {
 	us := &[]*User{}
 	sm := mysql.SELECT("*").FROM("users", "u")
-	sm.Execute(MYDB).
-		ExtractorResultTo(us)
+	sm.Execute(MYDB).ExtractorResultTo(us)
 	fmt.Println(toJSONString(us))
+
+	u := &User{}
+	sm.LIMIT(1).Execute(MYDB).ExtractorResultTo(u)
+	fmt.Println(toJSONString(u))
 }
 
 func toJSONString(v interface{}) string {
