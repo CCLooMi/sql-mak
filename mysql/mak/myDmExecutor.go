@@ -18,6 +18,8 @@ func (exe *MySQLDMExecutor) Update() sql.Result {
 	if err != nil {
 		panic(err)
 	}
+	defer stmt.Close()
+
 	r, err := stmt.Exec(exe.Mak.Args()...)
 	if err != nil {
 		panic(err)
@@ -30,9 +32,14 @@ func (exe *MySQLDMExecutor) BatchUpdate() []sql.Result {
 	if err != nil {
 		panic(err)
 	}
+	defer stmt.Close()
+
 	rs := []sql.Result{}
 	for _, ags := range exe.Mak.BatchArgs() {
-		r, _ := stmt.Exec(ags...)
+		r, err := stmt.Exec(ags...)
+		if err != nil {
+			panic(err)
+		}
 		rs = append(rs, r)
 	}
 	return rs

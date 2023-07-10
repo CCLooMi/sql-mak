@@ -1,15 +1,15 @@
 package mak
 
 import (
-	"log"
 	"strings"
 
 	"github.com/CCLooMi/sql-mak/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type AbstractSQLMak struct {
 	SQLMak
-	Log        *log.Logger
+	Log        *logrus.Logger
 	logSql     bool
 	args       []interface{}
 	batchArgs  [][]interface{}
@@ -37,7 +37,7 @@ type B struct {
 
 func NewAbstractSQLMak(child *AbstractSQLMakChild) *AbstractSQLMak {
 	agod := &AbstractSQLMak{
-		Log:        log.Default(),
+		Log:        logrus.New(),
 		logSql:     true,
 		args:       make([]interface{}, 0),
 		hasSubArgs: false,

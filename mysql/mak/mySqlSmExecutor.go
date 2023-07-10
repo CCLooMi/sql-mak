@@ -18,17 +18,6 @@ func NewMySQLSMExecutor(sm *SQLSM, mdb *sql.DB) *MySQLSMExecutor {
 	return exe
 }
 
-func (exe *MySQLSMExecutor) INSERT_INTO_TABLExtractorResultSet(rse ResultSetExtractor) interface{} {
-	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
-	if err != nil {
-		panic(err)
-	}
-	rows, err := stmp.Query(exe.Mak.Args()...)
-	if err != nil {
-		panic(err)
-	}
-	return rse(rows)
-}
 func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {
@@ -83,12 +72,6 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 	columns, _ := rs.Columns()
 	cL := len(columns)
 
-	// values := make([]interface{}, cL)
-	// for i := range values {
-	// 	var val interface{}
-	// 	values[i] = &val
-	// }
-
 	outType := utils.GetType(out.Type())
 	out = utils.GetValue(out)
 	if outType.Kind() == reflect.Slice {
@@ -104,8 +87,6 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 					fnames[i] = ei.CFMap[col]
 				}
 			}
-			// rs.Scan(values...)
-			// utils.SetFValues(ele, &fnames, &values)
 			utils.SetValuesWithRows(ele, &fnames, rs)
 			if outType.Elem().Kind() == reflect.Ptr {
 				out.Set(reflect.Append(out, ele))
@@ -121,8 +102,6 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 		fnames[i] = ei.CFMap[col]
 	}
 	for rs.Next() {
-		// rs.Scan(values...)
-		// utils.SetFValues(out, &fnames, &values)
 		utils.SetValuesWithRows(out, &fnames, rs)
 	}
 }

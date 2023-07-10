@@ -7,7 +7,7 @@ import (
 )
 
 type SQLExecutor struct {
-	Log *logrus.Entry
+	Log *logrus.Logger
 	Mak SQLMak
 }
 
@@ -15,7 +15,7 @@ type ResultSetExtractor func(rs *sql.Rows) interface{}
 
 func NewSQLExecutor(mak SQLMak) *SQLExecutor {
 	return &SQLExecutor{
-		Log: logrus.WithField("component", "SQLExecutor"),
+		Log: logrus.New(),
 		Mak: mak,
 	}
 }
