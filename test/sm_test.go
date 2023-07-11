@@ -9,6 +9,7 @@ import (
 
 	"github.com/CCLooMi/sql-mak/mysql"
 	"github.com/CCLooMi/sql-mak/mysql/entity"
+	"github.com/CCLooMi/sql-mak/utils"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -54,6 +55,13 @@ func TestInsert(t *testing.T) {
 		ON_DUPLICATE_KEY_UPDATE().SET("username=?", "JoyNew")
 	id, err := im.Execute(MYDB).Update().RowsAffected()
 	fmt.Println(id, err)
+}
+
+func TestEntityInfo(t *testing.T) {
+	ei := utils.GetEntityInfo(User{})
+	if ei.PrimaryKey != "id" {
+		t.Errorf("Expected primary key to be 'id', but got '%s'", ei.PrimaryKey)
+	}
 }
 
 func toJSONString(v interface{}) string {

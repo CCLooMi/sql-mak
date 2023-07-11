@@ -1,14 +1,18 @@
 package utils
 
-import "reflect"
+import (
+	"reflect"
+	"strings"
+)
 
 type EntityInfo struct {
-	TableName string
-	Fields    []string
-	Columns   []string
-	Tags      []reflect.StructTag
-	FCMap     map[string]string
-	CFMap     map[string]string
+	TableName  string
+	PrimaryKey string
+	Fields     []string
+	Columns    []string
+	Tags       []reflect.StructTag
+	FCMap      map[string]string
+	CFMap      map[string]string
 }
 
 var infoCache = make(map[string]*EntityInfo)
@@ -21,6 +25,7 @@ func GetEntityInfo(table interface{}) EntityInfo {
 	if ei != nil {
 		return *ei
 	}
+	primaryKey := "id"
 	fields := GetFields(table)
 	fL := len(fields)
 	fnames := make([]string, fL)
@@ -31,7 +36,11 @@ func GetEntityInfo(table interface{}) EntityInfo {
 	for i := 0; i < fL; i++ {
 		fi := fields[i]
 		fn := fi.Name
-		cn := getTableColumnName(fi)
+		cn, orm := getTableColumnName(fi)
+		//判断orm中是否有primaryKey
+		if strings.Contains(orm, "primaryKey") {
+			primaryKey = cn
+		}
 		fcmap[fn] = cn
 		cfmap[cn] = fn
 		fnames[i] = fn
@@ -39,22 +48,24 @@ func GetEntityInfo(table interface{}) EntityInfo {
 		tags[i] = fi.Tag
 	}
 	ei = &EntityInfo{
-		TableName: tableName,
-		Fields:    fnames,
-		Columns:   cols,
-		Tags:      tags,
-		FCMap:     fcmap,
-		CFMap:     cfmap,
+		TableName:  tableName,
+		PrimaryKey: primaryKey,
+		Fields:     fnames,
+		Columns:    cols,
+		Tags:       tags,
+		FCMap:      fcmap,
+		CFMap:      cfmap,
 	}
 	infoCache[tableName] = ei
 	return *ei
 }
-func getTableColumnName(field reflect.StructField) string {
+func getTableColumnName(field reflect.StructField) (string, string) {
+	orm := field.Tag.Get("orm")
 	name := field.Tag.Get("column")
 	if name != "" {
-		return name
+		return name, orm
 	}
-	return field.Name
+	return field.Name, orm
 }
 
 func TableName(table interface{}) string {
