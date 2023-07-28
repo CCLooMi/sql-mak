@@ -17,7 +17,7 @@ import (
 var MYDB *sql.DB
 
 func init() {
-	_db, err := sql.Open("mysql", "root:apple@tcp(127.0.0.1:3308)/wios?charset=utf8mb4&parseTime=True&loc=Local")
+	_db, err := sql.Open("mysql", "root:apple@tcp(127.0.0.1:3306)/wios?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
 		panic(err)
 	}
@@ -47,9 +47,10 @@ func TestSelectExtract(t *testing.T) {
 }
 func TestInsert(t *testing.T) {
 	u := &User{Username: "Joy", Password: []byte("123456")}
-	u.ID = []byte{1, 2, 3}
-	u.UpdatedAt = time.Now()
-	u.InsertedAt = time.Now()
+	u.Id = &entity.ID{1, 2, 3, 4, 5}
+	now := entity.DateTime(time.Now())
+	u.UpdatedAt = &now
+	u.InsertedAt = &now
 
 	im := mysql.INSERT_INTO(u).
 		ON_DUPLICATE_KEY_UPDATE().SET("username=?", "JoyNew")

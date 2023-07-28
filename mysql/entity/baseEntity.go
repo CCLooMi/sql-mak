@@ -8,12 +8,12 @@ import (
 
 type DateTime time.Time
 
-func (dt DateTime) MarshalJSON() ([]byte, error) {
+func (dt *DateTime) MarshalJSON() ([]byte, error) {
 	//判断dt是否为空
-	if time.Time(dt).IsZero() {
+	if time.Time(*dt).IsZero() {
 		return []byte("null"), nil
 	}
-	var stamp = `"` + time.Time(dt).Format("2006-01-02 15:04:05") + `"`
+	var stamp = `"` + time.Time(*dt).Format("2006-01-02 15:04:05") + `"`
 	return []byte(stamp), nil
 }
 
@@ -40,8 +40,8 @@ func (dt *DateTime) UnmarshalJSON(data []byte) error {
 
 type ID []byte
 
-func (id ID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(hex.EncodeToString(id))
+func (id *ID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(hex.EncodeToString(*id))
 }
 
 func (id *ID) UnmarshalJSON(data []byte) error {
@@ -72,10 +72,10 @@ type BaseEntity interface {
 
 type IdEntity struct {
 	BaseEntity
-	Id ID `orm:"type:binary(16); primaryKey; not null; comment:'主键ID'" column:"id"`
+	Id *ID `orm:"type:binary(16); primaryKey; not null; comment:'主键ID'" column:"id"`
 }
 
 type TimeEntity struct {
-	InsertedAt DateTime `orm:"not null; comment:'插入时间'" column:"inserted_at"`
-	UpdatedAt  DateTime `orm:"not null; comment:'更新时间'" column:"updated_at"`
+	InsertedAt *DateTime `orm:"not null; comment:'插入时间'" column:"inserted_at"`
+	UpdatedAt  *DateTime `orm:"not null; comment:'更新时间'" column:"updated_at"`
 }

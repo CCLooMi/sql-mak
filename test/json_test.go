@@ -9,8 +9,8 @@ import (
 
 type ID []byte
 
-func (id ID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(hex.EncodeToString(id))
+func (id *ID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(hex.EncodeToString(*id))
 }
 
 func (id *ID) UnmarshalJSON(data []byte) error {
@@ -37,12 +37,12 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 
 type DateTime time.Time
 
-func (dt DateTime) MarshalJSON() ([]byte, error) {
+func (dt *DateTime) MarshalJSON() ([]byte, error) {
 	//判断dt是否为空
-	if time.Time(dt).IsZero() {
+	if time.Time(*dt).IsZero() {
 		return []byte("null"), nil
 	}
-	var stamp = `"` + time.Time(dt).Format("2006-01-02 15:04:05") + `"`
+	var stamp = `"` + time.Time(*dt).Format("2006-01-02 15:04:05") + `"`
 	return []byte(stamp), nil
 }
 
@@ -68,14 +68,15 @@ func (dt *DateTime) UnmarshalJSON(data []byte) error {
 }
 
 type Obj struct {
-	ID       ID       `json:"id,omitempty"`
-	UpdateAt DateTime `json:"update_at,omitempty"`
+	ID       *ID       `json:"id,omitempty"`
+	UpdateAt *DateTime `json:"update_at,omitempty"`
 }
 
 func TestJSON(ts *testing.T) {
+	now := DateTime(time.Now())
 	data := Obj{
-		ID:       []byte{1, 2, 3, 4, 5},
-		UpdateAt: DateTime(time.Now()),
+		ID:       &ID{1, 2, 3, 4, 5},
+		UpdateAt: &now,
 	}
 
 	jsonData, err := json.Marshal(data)
