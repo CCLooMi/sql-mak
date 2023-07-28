@@ -71,8 +71,8 @@ type BaseEntity interface {
 }
 
 type IdEntity struct {
-	BaseEntity
-	Id *ID `orm:"type:binary(16); primaryKey; not null; comment:'主键ID'" column:"id"`
+	BaseEntity `json:"omitempty"`
+	Id         *ID `orm:"type:binary(16); primaryKey; not null; comment:'主键ID'" column:"id"`
 }
 
 type TimeEntity struct {
