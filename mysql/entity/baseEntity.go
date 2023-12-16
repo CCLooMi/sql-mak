@@ -72,10 +72,15 @@ type BaseEntity interface {
 
 type IdEntity struct {
 	BaseEntity `json:"omitempty"`
-	Id         *ID `orm:"type:binary(16); primaryKey; not null; comment:'主键ID'" column:"id"`
+	Id         *ID `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 
 type TimeEntity struct {
-	InsertedAt *DateTime `orm:"not null; comment:'插入时间'" column:"inserted_at"`
-	UpdatedAt  *DateTime `orm:"not null; comment:'更新时间'" column:"updated_at"`
+	InsertedAt *DateTime `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
+	UpdatedAt  *DateTime `orm:"datetime not null comment '更新时间'" column:"updated_at"`
+}
+
+type AuditEntity struct {
+	CreatedBy *ID `orm:"binary(16) not null comment '创建人'" column:"created_by"`
+	UpdatedBy *ID `orm:"binary(16) not null comment '更新人'" column:"updated_by"`
 }
