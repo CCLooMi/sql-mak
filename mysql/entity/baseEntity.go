@@ -69,16 +69,16 @@ type BaseEntity interface {
 	TableName() string
 }
 type IdEntity struct {
-	BaseEntity
-	Id *string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true"`
+	BaseEntity `json:"omitempty"`
+	Id         *string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type LongIdEntity struct {
-	BaseEntity
-	Id *int64 `orm:"bigint auto_increment not null comment '主键ID'" column:"id" primaryKey:"true"`
+	BaseEntity `json:"omitempty"`
+	Id         *int64 `orm:"bigint auto_increment not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type BidEntity struct {
-	BaseEntity
-	Id *[]byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true"`
+	BaseEntity `json:"omitempty"`
+	Id         *[]byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type TimeEntity struct {
 	InsertedAt *time.Time `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
