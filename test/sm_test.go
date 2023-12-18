@@ -48,9 +48,9 @@ func TestSelectExtract(t *testing.T) {
 }
 func TestInsert(t *testing.T) {
 	u := &User{Username: "Joy", Password: []byte("123456")}
-	u.Id = "123456"
-	u.UpdatedAt = time.Now()
-	u.InsertedAt = time.Now()
+	*u.Id = "123456"
+	*u.UpdatedAt = time.Now()
+	*u.InsertedAt = time.Now()
 
 	im := mysql.INSERT_INTO(u).
 		ON_DUPLICATE_KEY_UPDATE().SET("username=?", "JoyNew")

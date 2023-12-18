@@ -70,37 +70,37 @@ type BaseEntity interface {
 }
 type IdEntity struct {
 	BaseEntity
-	Id string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true"`
+	Id *string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type LongIdEntity struct {
 	BaseEntity
-	Id int64 `orm:"bigint auto_increment not null comment '主键ID'" column:"id" primaryKey:"true"`
+	Id *int64 `orm:"bigint auto_increment not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type BidEntity struct {
 	BaseEntity
-	Id []byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true"`
+	Id *[]byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type TimeEntity struct {
-	InsertedAt time.Time `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
-	UpdatedAt  time.Time `orm:"datetime not null comment '更新时间'" column:"updated_at"`
+	InsertedAt *time.Time `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
+	UpdatedAt  *time.Time `orm:"datetime not null comment '更新时间'" column:"updated_at"`
 }
 type StrTimeEntity struct {
-	InsertedAt string `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
-	UpdatedAt  string `orm:"datetime not null comment '更新时间'" column:"updated_at"`
+	InsertedAt *string `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
+	UpdatedAt  *string `orm:"datetime not null comment '更新时间'" column:"updated_at"`
 }
 type TimestampEntity struct {
-	InsertedAt int64 `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
-	UpdatedAt  int64 `orm:"datetime not null comment '更新时间'" column:"updated_at"`
+	InsertedAt *int64 `orm:"datetime not null comment '插入时间'" column:"inserted_at"`
+	UpdatedAt  *int64 `orm:"datetime not null comment '更新时间'" column:"updated_at"`
 }
 type AuditEntity struct {
-	CreatedBy string `orm:"varchar(32) not null comment '创建人'" column:"created_by"`
-	UpdatedBy string `orm:"varchar(32) not null comment '更新人'" column:"updated_by"`
+	CreatedBy *string `orm:"varchar(32) not null comment '创建人'" column:"created_by"`
+	UpdatedBy *string `orm:"varchar(32) not null comment '更新人'" column:"updated_by"`
 }
 type BAuditEntity struct {
-	CreatedBy []byte `orm:"binary(16) not null comment '创建人'" column:"created_by"`
-	UpdatedBy []byte `orm:"binary(16) not null comment '更新人'" column:"updated_by"`
+	CreatedBy *[]byte `orm:"binary(16) not null comment '创建人'" column:"created_by"`
+	UpdatedBy *[]byte `orm:"binary(16) not null comment '更新人'" column:"updated_by"`
 }
 type LongAuditEntity struct {
-	CreatedBy int64 `orm:"bigint not null comment '创建人'" column:"created_by"`
-	UpdatedBy int64 `orm:"bigint not null comment '更新人'" column:"updated_by"`
+	CreatedBy *int64 `orm:"bigint not null comment '创建人'" column:"created_by"`
+	UpdatedBy *int64 `orm:"bigint not null comment '更新人'" column:"updated_by"`
 }

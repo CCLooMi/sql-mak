@@ -123,17 +123,18 @@ func TestBaseEntity(ts *testing.T) {
 		entity.TimeEntity
 		entity.BAuditEntity
 	}
+	t := time.Now()
 	u := U{
 		BidEntity: entity.BidEntity{
-			Id: []byte{1, 2, 3, 4, 5},
+			Id: &[]byte{1, 2, 3, 4, 5},
 		},
 		TimeEntity: entity.TimeEntity{
-			InsertedAt: time.Now(),
-			UpdatedAt:  time.Now(),
+			InsertedAt: &t,
+			UpdatedAt:  &t,
 		},
 		BAuditEntity: entity.BAuditEntity{
-			CreatedBy: []byte{1, 2, 3, 4, 5},
-			UpdatedBy: []byte{1, 2, 3, 4, 5},
+			CreatedBy: &[]byte{1, 2, 3, 4, 5},
+			UpdatedBy: &[]byte{1, 2, 3, 4, 5},
 		},
 	}
 	r, err := json.Marshal(u)
