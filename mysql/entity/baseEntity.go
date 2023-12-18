@@ -69,15 +69,15 @@ type BaseEntity interface {
 	TableName() string
 }
 type IdEntity struct {
-	BaseEntity `json:"omitempty"`
+	BaseEntity `json:"-"`
 	Id         *string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type LongIdEntity struct {
-	BaseEntity `json:"omitempty"`
+	BaseEntity `json:"-"`
 	Id         *int64 `orm:"bigint auto_increment not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type BidEntity struct {
-	BaseEntity `json:"omitempty"`
+	BaseEntity `json:"-"`
 	Id         *[]byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true"`
 }
 type TimeEntity struct {
