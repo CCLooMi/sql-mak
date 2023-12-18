@@ -24,7 +24,8 @@ func init() {
 	if err = _db.Ping(); err != nil {
 		_db, _ := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local")
 		if err = _db.Ping(); err != nil {
-			panic(err)
+			fmt.Errorf("Failed to connect to database: %v", err)
+			return
 		}
 		MYDB = _db
 	} else {
@@ -47,10 +48,9 @@ func TestSelectExtract(t *testing.T) {
 }
 func TestInsert(t *testing.T) {
 	u := &User{Username: "Joy", Password: []byte("123456")}
-	u.Id = &entity.ID{1, 2, 3, 4, 5}
-	now := entity.DateTime(time.Now())
-	u.UpdatedAt = &now
-	u.InsertedAt = &now
+	u.Id = "123456"
+	u.UpdatedAt = time.Now()
+	u.InsertedAt = time.Now()
 
 	im := mysql.INSERT_INTO(u).
 		ON_DUPLICATE_KEY_UPDATE().SET("username=?", "JoyNew")
@@ -73,8 +73,8 @@ func toJSONString(v interface{}) string {
 type User struct {
 	entity.IdEntity
 	entity.TimeEntity
-	Username string `orm:"type:varchar(255); comment:'用户名'" column:"username"`
-	Password []byte `orm:"type:varbinary(32); comment:'用户密码'" column:"password"`
+	Username string `orm:"varchar(255) comment '用户名'" column:"username"`
+	Password []byte `orm:"varbinary(32) comment '用户密码'" column:"password"`
 }
 
 func (*User) TableName() string {

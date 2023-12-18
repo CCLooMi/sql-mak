@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/hex"
 	"encoding/json"
+	"github.com/CCLooMi/sql-mak/mysql/entity"
 	"testing"
 	"time"
 )
@@ -114,4 +115,31 @@ func toJSON(v any) string {
 		panic(err)
 	}
 	return string(b)
+}
+
+func TestBaseEntity(ts *testing.T) {
+	type U struct {
+		entity.BidEntity
+		entity.TimeEntity
+		entity.BAuditEntity
+	}
+	u := U{
+		BidEntity: entity.BidEntity{
+			Id: []byte{1, 2, 3, 4, 5},
+		},
+		TimeEntity: entity.TimeEntity{
+			InsertedAt: time.Now(),
+			UpdatedAt:  time.Now(),
+		},
+		BAuditEntity: entity.BAuditEntity{
+			CreatedBy: []byte{1, 2, 3, 4, 5},
+			UpdatedBy: []byte{1, 2, 3, 4, 5},
+		},
+	}
+	r, err := json.Marshal(u)
+	if err != nil {
+		ts.Log("Failed to marshal struct to JSON:", err)
+		return
+	}
+	ts.Log("Serialized JSON:", string(r))
 }
