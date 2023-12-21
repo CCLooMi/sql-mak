@@ -13,6 +13,7 @@ type EntityInfo struct {
 	Tags       []reflect.StructTag
 	FCMap      map[string]string
 	CFMap      map[string]string
+	IExpMap    map[string]string
 }
 
 var infoCache = make(map[string]*EntityInfo)
@@ -20,7 +21,13 @@ var nameCache = make(map[string]string)
 
 // 传入结构体指针或结构体，返回实体信息
 func GetEntityInfo(table interface{}) EntityInfo {
-	tableName := TableName(table)
+	var tableName string
+	switch t := table.(type) {
+	case string:
+		tableName = t
+	default:
+		tableName = TableName(table)
+	}
 	ei := infoCache[tableName]
 	if ei != nil {
 		return *ei
@@ -31,6 +38,7 @@ func GetEntityInfo(table interface{}) EntityInfo {
 	fnames := make([]string, fL)
 	fcmap := make(map[string]string)
 	cfmap := make(map[string]string)
+	iExpMap := make(map[string]string)
 	cols := make([]string, fL)
 	tags := make([]reflect.StructTag, fL)
 	for i := 0; i < fL; i++ {
@@ -43,6 +51,11 @@ func GetEntityInfo(table interface{}) EntityInfo {
 		}
 		fcmap[fn] = cn
 		cfmap[cn] = fn
+		insertExp := fi.Tag.Get("insertExp")
+		if insertExp != "" {
+			iExpMap[fn] = insertExp
+			iExpMap[cn] = insertExp
+		}
 		fnames[i] = fn
 		cols[i] = cn
 		tags[i] = fi.Tag
@@ -55,6 +68,7 @@ func GetEntityInfo(table interface{}) EntityInfo {
 		Tags:       tags,
 		FCMap:      fcmap,
 		CFMap:      cfmap,
+		IExpMap:    iExpMap,
 	}
 	infoCache[tableName] = ei
 	return *ei

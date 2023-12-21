@@ -38,7 +38,14 @@ func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {
 	ei := utils.GetEntityInfo(table)
 	if len(columns) == 0 {
 		im.columns = append(im.columns, ei.Columns...)
-		im.args = append(im.args, utils.GetFieldValues(table, ei.Fields)...)
+		fvs := utils.GetFieldValues(table, ei.Fields)
+		for i, vi := range fvs {
+			exp := ei.IExpMap[ei.Columns[i]]
+			if exp != "" {
+				fvs[i] = ExpStr(exp, vi)
+			}
+		}
+		im.args = append(im.args, fvs...)
 	} else {
 		im.columns = append(im.columns, columns...)
 	}
@@ -131,11 +138,11 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 		}
 		L := len(im.columns)
 		for i, idx := 0, 0; i < L; i++ {
-			if _, ok := ags[i].(EXP); ok {
+			if _, ok := ags[i].(*EXP); ok {
 				ri := i - idx
 				args := im.args
 				args = append(args[:ri], args[ri+1:]...)
-				e := ags[i].(EXP)
+				e := ags[i].(*EXP)
 				sb.WriteString(e.Exp())
 				for _, arg := range e.Args() {
 					args = append(args[:ri], append([]interface{}{arg}, args[ri:]...)...)

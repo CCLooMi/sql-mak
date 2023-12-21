@@ -70,7 +70,7 @@ type BaseEntity interface {
 }
 type IdEntity struct {
 	BaseEntity `json:"-"`
-	Id         *string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id"`
+	Id         *string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id" insertExp:"IFNULL(?,REPLACE(UUID(), '-', ''))"`
 }
 type LongIdEntity struct {
 	BaseEntity `json:"-"`
@@ -78,19 +78,19 @@ type LongIdEntity struct {
 }
 type BidEntity struct {
 	BaseEntity `json:"-"`
-	Id         *[]byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id"`
+	Id         *[]byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id" insertExp:"IFNULL(?,UNHEX(REPLACE(UUID(), '-', '')))"`
 }
 type TimeEntity struct {
-	InsertedAt *time.Time `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt"`
-	UpdatedAt  *time.Time `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt"`
+	InsertedAt *time.Time `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW())"`
+	UpdatedAt  *time.Time `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW())"`
 }
 type StrTimeEntity struct {
-	InsertedAt *string `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt"`
-	UpdatedAt  *string `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt"`
+	InsertedAt *string `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW())"`
+	UpdatedAt  *string `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW())"`
 }
 type TimestampEntity struct {
-	InsertedAt *int64 `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt"`
-	UpdatedAt  *int64 `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt"`
+	InsertedAt *int64 `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW())"`
+	UpdatedAt  *int64 `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW())"`
 }
 type AuditEntity struct {
 	CreatedBy *string `orm:"varchar(32) not null comment '创建人'" column:"created_by" json:"createdBy"`

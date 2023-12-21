@@ -48,14 +48,17 @@ func TestSelectExtract(t *testing.T) {
 }
 func TestInsert(t *testing.T) {
 	u := &User{Username: "Joy", Password: []byte("123456")}
-	*u.Id = "123456"
-	*u.UpdatedAt = time.Now()
-	*u.InsertedAt = time.Now()
+	id := "123456"
+	time := time.Now()
+	u.Id = &id
+	u.UpdatedAt = &time
+	u.InsertedAt = &time
 
 	im := mysql.INSERT_INTO(u).
 		ON_DUPLICATE_KEY_UPDATE().SET("username=?", "JoyNew")
-	id, err := im.Execute(MYDB).Update().RowsAffected()
-	fmt.Println(id, err)
+	fmt.Println("sql", im.Sql())
+	c, err := im.Execute(MYDB).Update().RowsAffected()
+	fmt.Println(c, err)
 }
 
 func TestEntityInfo(t *testing.T) {

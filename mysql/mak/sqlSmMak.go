@@ -47,8 +47,8 @@ func (s *SQLSM) SELECT(cols ...interface{}) *SQLSM {
 		case string:
 			s.columns = append(s.columns, colV)
 			s.columnAlias = append(s.columnAlias, colV[strings.LastIndex(colV, ".")+1:])
-		case EXP:
-			exp := col.(EXP)
+		case *EXP:
+			exp := col.(*EXP)
 			s.columns = append(s.columns, exp)
 			s.args = append(s.args, exp.args...)
 			s.hasSubSelect = true
