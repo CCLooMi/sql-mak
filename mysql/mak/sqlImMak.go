@@ -136,25 +136,15 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 		if im.setArgs != nil {
 			l--
 		}
-		L := len(im.columns)
-		for i, idx := 0, 0; i < L; i++ {
-			if e, ok := ags[i].(*EXP); ok {
-				ri := i - idx
-				args := im.args
-				args = append(args[:ri], args[ri+1:]...)
+		for i, ag := range ags {
+			if e, ok := ag.(*EXP); ok {
 				sb.WriteString(e.Exp())
-				for _, arg := range e.Args() {
-					args = append(args[:ri], append([]interface{}{arg}, args[ri:]...)...)
-					idx--
-					ri++
-				}
-				im.args = args
+				im.args = append(im.args[:i], append(e.Args(), im.args[i+1:]...)...)
 			} else {
-				if i != L-1 {
-					sb.WriteString("?,")
-				} else {
-					sb.WriteRune('?')
-				}
+				sb.WriteRune('?')
+			}
+			if i != len(ags)-1 {
+				sb.WriteString(",")
 			}
 		}
 		sb.WriteRune(')')
