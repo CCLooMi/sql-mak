@@ -35,8 +35,8 @@ func UPDATE(table interface{}, alias string) *mak.SQLUM {
 func DELETE() *mak.SQLDM {
 	return mak.NewSQLDM()
 }
-func TxExecute(tx *sql.Tx, maks ...mak.SQLMak) []*sql.Result {
-	var rsList []*sql.Result
+func TxExecute(tx *sql.Tx, maks ...mak.SQLMak) []sql.Result {
+	var rsList []sql.Result
 	for _, v := range maks {
 		stmt, err := tx.Prepare(v.Sql())
 		if err != nil {
@@ -49,7 +49,7 @@ func TxExecute(tx *sql.Tx, maks ...mak.SQLMak) []*sql.Result {
 			tx.Rollback()
 			panic(err.Error())
 		}
-		rsList = append(rsList, &rs)
+		rsList = append(rsList, rs)
 	}
 	err := tx.Commit()
 	if err != nil {
