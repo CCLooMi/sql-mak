@@ -10,11 +10,12 @@ import (
 type SQLIM struct {
 	AbstractSQLMak
 	AbstractSQLMakChild
-	table    string
-	columns  []string
-	valuesSM *SQLSM
-	sets     []string
-	setArgs  []interface{}
+	table      string
+	columns    []string
+	entityArgs []interface{}
+	valuesSM   *SQLSM
+	sets       []string
+	setArgs    []interface{}
 }
 
 func NewSQLIM() *SQLIM {
@@ -38,14 +39,7 @@ func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {
 	ei := utils.GetEntityInfo(table)
 	if len(columns) == 0 {
 		im.columns = append(im.columns, ei.Columns...)
-		fvs := utils.GetFieldValues(table, ei.Fields)
-		for i, vi := range fvs {
-			exp := ei.IExpMap[ei.Columns[i]]
-			if exp != "" {
-				fvs[i] = ExpStr(exp, vi)
-			}
-		}
-		im.args = append(im.args, fvs...)
+		im.entityArgs = utils.GetFieldValues(table, ei.Fields)
 	} else {
 		im.columns = append(im.columns, columns...)
 	}
@@ -129,37 +123,43 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 		sb.WriteString("(")
 		im.valuesSM._sql(sb)
 		sb.WriteString(")")
-	} else if len(im.args) > 0 {
+	} else if im.batchArgs != nil {
+		ei := utils.GetEntityInfo(im.table)
 		sb.WriteString("VALUES (")
-		ags := im.args
-		l := len(ags)
-		if im.setArgs != nil {
-			l -= len(im.setArgs)
-		}
-		for i, ag := range ags {
-			if i < l {
-				if e, ok := ag.(*EXP); ok {
-					sb.WriteString(e.Exp())
-					im.args = append(im.args[:i], append(e.Args(), im.args[i+1:]...)...)
-				} else {
-					sb.WriteRune('?')
-				}
-				if i != len(ags)-1 {
-					sb.WriteString(",")
-				}
+		L := len(im.columns)
+		for i := 0; i < L; i++ {
+			exp := ei.IExpMap[im.columns[i]]
+			if exp != "" {
+				sb.WriteString(exp)
+			} else {
+				sb.WriteRune('?')
+			}
+			if i != L-1 {
+				sb.WriteRune(',')
 			}
 		}
 		sb.WriteRune(')')
-	} else if im.batchArgs != nil {
+	} else {
+		ei := utils.GetEntityInfo(im.table)
 		sb.WriteString("VALUES (")
-		l := len(im.batchArgs[0])
-		L := len(im.columns)
-		for i := 0; i < l && i < L; i++ {
-			if i != l-1 && i != L-1 {
-				sb.WriteString("?,")
-				continue
+		L := len(im.args)
+		if im.setArgs != nil {
+			L -= len(im.setArgs)
+		}
+		if L == 0 {
+			im.args = append(im.args[0:1], im.entityArgs...)
+			L = len(im.entityArgs)
+		}
+		for i := 0; i < L; i++ {
+			exp := ei.IExpMap[im.columns[i]]
+			if exp != "" {
+				sb.WriteString(exp)
+			} else {
+				sb.WriteRune('?')
 			}
-			sb.WriteRune('?')
+			if i != L-1 {
+				sb.WriteRune(',')
+			}
 		}
 		sb.WriteRune(')')
 	}
