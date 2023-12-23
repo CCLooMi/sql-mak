@@ -67,7 +67,6 @@ func TestEntityInfo(t *testing.T) {
 		t.Errorf("Expected primary key to be 'id', but got '%s'", ei.PrimaryKey)
 	}
 }
-
 func toJSONString(v interface{}) string {
 	b, _ := json.Marshal(v)
 	return string(b)

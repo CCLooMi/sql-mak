@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"github.com/CCLooMi/sql-mak/mysql/mak"
 )
 
@@ -31,7 +32,28 @@ func INSERT_INTO(table interface{}, columns ...string) *mak.SQLIM {
 func UPDATE(table interface{}, alias string) *mak.SQLUM {
 	return mak.NewSQLUM().UPDATE(table, alias)
 }
-
 func DELETE() *mak.SQLDM {
 	return mak.NewSQLDM()
+}
+func TxExecute(tx *sql.Tx, maks ...mak.SQLMak) []*sql.Result {
+	var rsList []*sql.Result
+	for _, v := range maks {
+		stmt, err := tx.Prepare(v.Sql())
+		if err != nil {
+			tx.Rollback()
+			panic(err.Error())
+		}
+		defer stmt.Close()
+		rs, err := stmt.Exec(v.Args()...)
+		if err != nil {
+			tx.Rollback()
+			panic(err.Error())
+		}
+		rsList = append(rsList, &rs)
+	}
+	err := tx.Commit()
+	if err != nil {
+		panic(err.Error())
+	}
+	return rsList
 }

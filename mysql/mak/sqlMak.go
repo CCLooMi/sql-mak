@@ -5,7 +5,6 @@ type SQLMak interface {
 	CountSql() string
 	Args() []interface{}
 	BatchArgs() [][]interface{}
-	Execute() SQLExecutor
 }
 
 type IN string

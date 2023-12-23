@@ -123,7 +123,7 @@ func (dm *SQLDM) OR_IN(column string, args ...interface{}) *SQLDM {
 	}
 	return dm
 }
-func (dm *SQLDM) BatchArgs(batchArgs ...[]interface{}) *SQLDM {
+func (dm *SQLDM) SetBatchArgs(batchArgs ...[]interface{}) *SQLDM {
 	if dm.batchArgs == nil {
 		dm.batchArgs = make([][]interface{}, 0)
 	}

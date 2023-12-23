@@ -86,7 +86,7 @@ func (im *SQLIM) SET(set string, args ...interface{}) *SQLIM {
 	return im
 }
 
-func (im *SQLIM) BatchArgs(batchArgs ...[]interface{}) *SQLIM {
+func (im *SQLIM) SetBatchArgs(batchArgs ...[]interface{}) *SQLIM {
 	if im.batchArgs == nil {
 		im.batchArgs = make([][]interface{}, 0)
 	}

@@ -223,16 +223,11 @@ func (um *SQLUM) LIMIT(limits ...interface{}) *SQLUM {
 	return um
 }
 
-func (um *SQLUM) BatchArgs(batchArgs ...[]interface{}) *SQLUM {
+func (um *SQLUM) SetBatchArgs(batchArgs ...[]interface{}) *SQLUM {
 	if um.batchArgs == nil {
 		um.batchArgs = make([][]interface{}, 0)
 	}
 	um.batchArgs = append(um.batchArgs, batchArgs...)
-	return um
-}
-
-func (um *SQLUM) SetBatchArgs(batchArgs [][]interface{}) *SQLUM {
-	um.batchArgs = batchArgs
 	return um
 }
 
