@@ -144,10 +144,10 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 		sb.WriteString("VALUES (")
 		L := len(im.args)
 		if im.setArgs != nil {
-			L -= len(im.setArgs)
+			L -= 1
 		}
 		if L == 0 {
-			im.args = append(im.args[0:1], im.entityArgs...)
+			im.args = append(im.entityArgs, im.args...)
 			L = len(im.entityArgs)
 		}
 		for i := 0; i < L; i++ {
