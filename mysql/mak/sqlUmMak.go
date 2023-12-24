@@ -162,6 +162,19 @@ func (um *SQLUM) WHERE_IN(column string, inOrNotIn string, args ...interface{}) 
 	return um
 }
 
+func (um *SQLUM) WHERE_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLUM {
+	var sb strings.Builder
+	sb.WriteString("WHERE ")
+	sb.WriteString(column)
+	sb.WriteRune(' ')
+	sb.WriteString(inOrNotIn.value())
+	sb.WriteRune('(')
+	sb.WriteString(subquery.Sql())
+	sb.WriteRune(')')
+	um.args = append(um.args, subquery.args...)
+	um.where = sb.String()
+	return um
+}
 func (um *SQLUM) AND_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
 	if len(args) > 0 {
 		sb := strings.Builder{}
@@ -183,6 +196,19 @@ func (um *SQLUM) AND_IN(column string, inOrNotIn string, args ...interface{}) *S
 	return um
 }
 
+func (um *SQLUM) AND_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLUM {
+	var sb strings.Builder
+	sb.WriteString("AND ")
+	sb.WriteString(column)
+	sb.WriteRune(' ')
+	sb.WriteString(inOrNotIn.value())
+	sb.WriteRune('(')
+	sb.WriteString(subquery.Sql())
+	sb.WriteRune(')')
+	um.args = append(um.args, subquery.args...)
+	um.where = sb.String()
+	return um
+}
 func (um *SQLUM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQLUM {
 	if len(args) > 0 {
 		sb := strings.Builder{}
@@ -204,6 +230,19 @@ func (um *SQLUM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQ
 	return um
 }
 
+func (um *SQLUM) OR_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLUM {
+	var sb strings.Builder
+	sb.WriteString("OR ")
+	sb.WriteString(column)
+	sb.WriteRune(' ')
+	sb.WriteString(inOrNotIn.value())
+	sb.WriteRune('(')
+	sb.WriteString(subquery.Sql())
+	sb.WriteRune(')')
+	um.args = append(um.args, subquery.args...)
+	um.where = sb.String()
+	return um
+}
 func (um *SQLUM) LIMIT(limits ...interface{}) *SQLUM {
 	if len(limits) > 0 {
 		if um.hasSubArgs {

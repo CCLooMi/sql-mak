@@ -78,6 +78,19 @@ func (dm *SQLDM) WHERE_IN(column string, args ...interface{}) *SQLDM {
 	return dm
 }
 
+func (dm *SQLDM) WHERE_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLDM {
+	var sb strings.Builder
+	sb.WriteString("WHERE ")
+	sb.WriteString(column)
+	sb.WriteRune(' ')
+	sb.WriteString(inOrNotIn.value())
+	sb.WriteRune('(')
+	sb.WriteString(subquery.Sql())
+	sb.WriteRune(')')
+	dm.args = append(dm.args, subquery.args...)
+	dm.where = sb.String()
+	return dm
+}
 func (dm *SQLDM) AND_IN(column string, args ...interface{}) *SQLDM {
 	if len(args) > 0 {
 		var sb strings.Builder
@@ -101,6 +114,19 @@ func (dm *SQLDM) AND_IN(column string, args ...interface{}) *SQLDM {
 	return dm
 }
 
+func (dm *SQLDM) AND_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLDM {
+	var sb strings.Builder
+	sb.WriteString("AND ")
+	sb.WriteString(column)
+	sb.WriteRune(' ')
+	sb.WriteString(inOrNotIn.value())
+	sb.WriteRune('(')
+	sb.WriteString(subquery.Sql())
+	sb.WriteRune(')')
+	dm.args = append(dm.args, subquery.args...)
+	dm.where = sb.String()
+	return dm
+}
 func (dm *SQLDM) OR_IN(column string, args ...interface{}) *SQLDM {
 	if len(args) > 0 {
 		var sb strings.Builder
@@ -121,6 +147,20 @@ func (dm *SQLDM) OR_IN(column string, args ...interface{}) *SQLDM {
 		}
 		dm.andor = append(dm.andor, sb.String())
 	}
+	return dm
+}
+
+func (dm *SQLDM) OR_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLDM {
+	var sb strings.Builder
+	sb.WriteString("OR ")
+	sb.WriteString(column)
+	sb.WriteRune(' ')
+	sb.WriteString(inOrNotIn.value())
+	sb.WriteRune('(')
+	sb.WriteString(subquery.Sql())
+	sb.WriteRune(')')
+	dm.args = append(dm.args, subquery.args...)
+	dm.where = sb.String()
 	return dm
 }
 func (dm *SQLDM) SetBatchArgs(batchArgs ...[]interface{}) *SQLDM {
