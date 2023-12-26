@@ -76,8 +76,12 @@ func GetEntityInfo(table interface{}) EntityInfo {
 func getTableColumnName(field reflect.StructField) (string, string) {
 	orm := field.Tag.Get("orm")
 	name := field.Tag.Get("column")
+	jname := field.Tag.Get("json")
 	if name != "" {
 		return name, orm
+	}
+	if jname != "" {
+		return jname, orm
 	}
 	return field.Name, orm
 }
