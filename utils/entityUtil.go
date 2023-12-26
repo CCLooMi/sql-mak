@@ -81,7 +81,6 @@ func getTableColumnName(field reflect.StructField) (string, string) {
 	}
 	return field.Name, orm
 }
-
 func TableName(table interface{}) string {
 	t := reflect.TypeOf(table)
 	name := t.Name()
@@ -92,7 +91,9 @@ func TableName(table interface{}) string {
 		}
 		method, ok := t.MethodByName("TableName")
 		if ok {
-			name = method.Func.Call([]reflect.Value{reflect.ValueOf(table)})[0].String()
+			if method.Type.In(0) == t {
+				name = method.Func.Call([]reflect.Value{reflect.ValueOf(table)})[0].String()
+			}
 		}
 		nameCache[t.String()] = name
 		return name
@@ -104,12 +105,20 @@ func TableName(table interface{}) string {
 	}
 	method, ok := t.MethodByName("TableName")
 	if ok {
-		name = method.Func.Call([]reflect.Value{reflect.New(t).Elem()})[0].String()
+		if method.Type.In(0) == t {
+			/*
+				Create an instance of a pointer type
+				and assign the original non-pointer type parameter
+				to the newly created instance of the pointer type.
+			*/
+			ptr := reflect.New(t.Elem())
+			ptr.Elem().Set(reflect.ValueOf(table))
+			name = method.Func.Call([]reflect.Value{ptr})[0].String()
+		}
 	}
 	nameCache[t.String()] = name
 	return name
 }
-
 func GetFieldNames(o interface{}) []string {
 	t := reflect.TypeOf(o)
 	fds := make([]string, 0)
