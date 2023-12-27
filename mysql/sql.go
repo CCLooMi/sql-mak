@@ -44,12 +44,23 @@ func TxExecute(tx *sql.Tx, maks ...mak.SQLMak) []sql.Result {
 			panic(err.Error())
 		}
 		defer stmt.Close()
-		rs, err := stmt.Exec(v.Args()...)
-		if err != nil {
-			tx.Rollback()
-			panic(err.Error())
+		batchArgs := v.BatchArgs()
+		if len(batchArgs) > 0 {
+			for _, ags := range batchArgs {
+				r, err := stmt.Exec(ags...)
+				if err != nil {
+					panic(err)
+				}
+				rsList = append(rsList, r)
+			}
+		} else {
+			rs, err := stmt.Exec(v.Args()...)
+			if err != nil {
+				tx.Rollback()
+				panic(err.Error())
+			}
+			rsList = append(rsList, rs)
 		}
-		rsList = append(rsList, rs)
 	}
 	err := tx.Commit()
 	if err != nil {
