@@ -126,6 +126,24 @@ func (e *SQLSMExecutor) RowsToMap(rows *sql.Rows) (map[string]interface{}, error
 	}
 	return make(map[string]interface{}), nil
 }
+func getGoType(dbType string) interface{} {
+	switch dbType {
+	case "VARCHAR", "TEXT", "NVARCHAR", "VARCHAR2", "CHAR", "XML":
+		return new(string)
+	case "INT":
+		return new(int)
+	case "BIGINT":
+		return new(int64)
+	case "DECIMAL":
+		return new(float64)
+	case "BOOL":
+		return new(bool)
+	case "JSONB":
+		return map[string]interface{}{}
+	default:
+		return new(interface{})
+	}
+}
 
 // RowsToMaps converts sql.Rows to a slice of maps
 func (e *SQLSMExecutor) RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, error) {
@@ -134,12 +152,15 @@ func (e *SQLSMExecutor) RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, er
 	if err != nil {
 		return nil, err
 	}
+	colTypes, err := rows.ColumnTypes()
+	if err != nil {
+		return nil, err
+	}
 
 	// Create slice of interface{} to hold row values
 	values := make([]interface{}, len(columns))
 	for i := range values {
-		var val interface{}
-		values[i] = &val
+		values[i] = getGoType(colTypes[i].DatabaseTypeName())
 	}
 
 	// Create slice of maps to hold result
@@ -159,7 +180,7 @@ func (e *SQLSMExecutor) RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, er
 
 		// Iterate over columns and add values to map
 		for i, col := range columns {
-			rowData[col] = *values[i].(*interface{})
+			rowData[col] = values[i]
 		}
 
 		// Append map to result slice
