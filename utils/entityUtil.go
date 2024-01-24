@@ -20,7 +20,7 @@ var infoCache = make(map[string]*EntityInfo)
 var nameCache = make(map[string]string)
 
 // 传入结构体指针或结构体，返回实体信息
-func GetEntityInfo(table interface{}) EntityInfo {
+func GetEntityInfo(table interface{}) *EntityInfo {
 	var tableName string
 	switch t := table.(type) {
 	case string:
@@ -30,7 +30,10 @@ func GetEntityInfo(table interface{}) EntityInfo {
 	}
 	ei := infoCache[tableName]
 	if ei != nil {
-		return *ei
+		return ei
+	}
+	if tableName == "" {
+		return nil
 	}
 	primaryKey := "id"
 	fields := GetFields(table)
@@ -71,7 +74,7 @@ func GetEntityInfo(table interface{}) EntityInfo {
 		IExpMap:    iExpMap,
 	}
 	infoCache[tableName] = ei
-	return *ei
+	return ei
 }
 func getTableColumnName(field reflect.StructField) (string, string) {
 	orm := field.Tag.Get("orm")
