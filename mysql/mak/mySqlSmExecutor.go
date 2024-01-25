@@ -2,9 +2,8 @@ package mak
 
 import (
 	"database/sql"
-	"reflect"
-
 	"github.com/CCLooMi/sql-mak/utils"
+	"reflect"
 )
 
 type MySQLSMExecutor struct {
@@ -43,6 +42,21 @@ func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
 		panic(err)
 	}
 	list, err := exe.RowsToMaps(rows)
+	if err != nil {
+		panic(err)
+	}
+	return list
+}
+func (exe *MySQLSMExecutor) GetResultAsList() []interface{} {
+	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.Mak.Args()...)
+	if err != nil {
+		panic(err)
+	}
+	list, err := exe.ColumnToList(rows, 0)
 	if err != nil {
 		panic(err)
 	}

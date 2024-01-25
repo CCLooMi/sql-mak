@@ -13,6 +13,7 @@ type SQLSMExecutor struct {
 type SQLSMExecutorChild interface {
 	GetResultAsMap() map[string]interface{}
 	GetResultAsMapList() []map[string]interface{}
+	GetResultAsList() []interface{}
 	ExtractorResultSet(rse ResultSetExtractor) interface{}
 	ExtractorResultTo(out interface{})
 	Count() int64
@@ -189,4 +190,23 @@ func (e *SQLSMExecutor) RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, er
 
 	// Return result
 	return maps, nil
+}
+
+func (e *SQLSMExecutor) ColumnToList(rows *sql.Rows, col int) ([]interface{}, error) {
+	colTypes, err := rows.ColumnTypes()
+	if err != nil {
+		return nil, err
+	}
+	result := make([]interface{}, 0)
+	i := 0
+	for rows.Next() {
+		result = append(result, getGoType(colTypes[col].DatabaseTypeName()))
+		// Scan row values into slice
+		err := rows.Scan(result[i])
+		i++
+		if err != nil {
+			return nil, err
+		}
+	}
+	return result, nil
 }
