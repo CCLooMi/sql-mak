@@ -27,7 +27,7 @@ func GetEntityInfo(table interface{}) *EntityInfo {
 	var tableName string
 	switch t := table.(type) {
 	case string:
-		tableName = t
+		return infoCache[t]
 	default:
 		tableName = TableName(table)
 	}

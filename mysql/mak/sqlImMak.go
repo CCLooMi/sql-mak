@@ -36,8 +36,8 @@ func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {
 	default:
 		im.table = im.TableName(table)
 	}
-	ei := utils.GetEntityInfo(table)
 	if len(columns) == 0 {
+		ei := utils.GetEntityInfo(table)
 		im.columns = append(im.columns, ei.Columns...)
 		im.entityArgs = utils.GetFieldValues(table, ei.Fields)
 	} else {
