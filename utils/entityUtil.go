@@ -21,6 +21,9 @@ var nameCache = make(map[string]string)
 
 // 传入结构体指针或结构体，返回实体信息
 func GetEntityInfo(table interface{}) *EntityInfo {
+	if table == nil {
+		return nil
+	}
 	var tableName string
 	switch t := table.(type) {
 	case string:
