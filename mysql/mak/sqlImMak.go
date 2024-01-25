@@ -10,6 +10,7 @@ import (
 type SQLIM struct {
 	AbstractSQLMak
 	AbstractSQLMakChild
+	iExpMap    map[string]string
 	table      string
 	columns    []string
 	entityArgs []interface{}
@@ -21,6 +22,7 @@ type SQLIM struct {
 func NewSQLIM() *SQLIM {
 	im := &SQLIM{
 		columns: make([]string, 0),
+		iExpMap: make(map[string]string),
 	}
 	a := im.toAbstractSQLMakChild()
 	im.AbstractSQLMak = *NewAbstractSQLMak(&a)
@@ -52,7 +54,16 @@ func (im *SQLIM) INTO_COLUMNS(columns ...string) *SQLIM {
 }
 
 func (im *SQLIM) VALUES(values ...interface{}) *SQLIM {
-	im.args = append(im.args, values...)
+	for i, v := range values {
+		// v type is mak.EXP
+		if exp, ok := v.(*EXP); ok {
+			im.hasSubArgs = true
+			im.args = append(im.args, exp.args...)
+			im.iExpMap[im.columns[i]] = exp.Exp()
+			continue
+		}
+		im.args = append(im.args, v)
+	}
 	return im
 }
 
@@ -128,9 +139,10 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 		sb.WriteString("VALUES (")
 		L := len(im.columns)
 		for i := 0; i < L; i++ {
-			exp := ei.IExpMap[im.columns[i]]
-			if exp != "" {
-				sb.WriteString(exp)
+			if im.iExpMap[im.columns[i]] != "" {
+				sb.WriteString(im.iExpMap[im.columns[i]])
+			} else if ei != nil && ei.IExpMap[im.columns[i]] != "" {
+				sb.WriteString(ei.IExpMap[im.columns[i]])
 			} else {
 				sb.WriteRune('?')
 			}
@@ -148,12 +160,13 @@ func (im *SQLIM) _sql(sb *strings.Builder) {
 		}
 		if L == 0 {
 			im.args = append(im.entityArgs, im.args...)
-			L = len(im.entityArgs)
 		}
+		L = len(im.columns)
 		for i := 0; i < L; i++ {
-			exp := ei.IExpMap[im.columns[i]]
-			if exp != "" {
-				sb.WriteString(exp)
+			if im.iExpMap[im.columns[i]] != "" {
+				sb.WriteString(im.iExpMap[im.columns[i]])
+			} else if ei != nil && ei.IExpMap[im.columns[i]] != "" {
+				sb.WriteString(ei.IExpMap[im.columns[i]])
 			} else {
 				sb.WriteRune('?')
 			}
