@@ -182,6 +182,7 @@ func (e *SQLSMExecutor) RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, er
 		// Iterate over columns and add values to map
 		for i, col := range columns {
 			rowData[col] = values[i]
+			values[i] = getGoType(colTypes[i].DatabaseTypeName())
 		}
 
 		// Append map to result slice
