@@ -129,7 +129,7 @@ func (e *SQLSMExecutor) RowsToMap(rows *sql.Rows) (map[string]interface{}, error
 }
 func getGoType(dbType string) interface{} {
 	switch dbType {
-	case "VARCHAR", "TEXT", "NVARCHAR", "VARCHAR2", "CHAR", "XML":
+	case "VARCHAR", "TEXT", "NVARCHAR", "VARCHAR2", "CHAR", "XML", "JSON":
 		return new(string)
 	case "INT":
 		return new(int)
