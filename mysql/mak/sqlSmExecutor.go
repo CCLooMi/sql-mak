@@ -130,19 +130,19 @@ func (e *SQLSMExecutor) RowsToMap(rows *sql.Rows) (map[string]interface{}, error
 func getGoType(dbType string) interface{} {
 	switch dbType {
 	case "VARCHAR", "TEXT", "NVARCHAR", "VARCHAR2", "CHAR", "XML", "JSON":
-		return new(string)
+		return new(*string)
 	case "INT":
-		return new(int)
+		return new(*int)
 	case "BIGINT":
-		return new(int64)
+		return new(*int64)
 	case "DECIMAL":
-		return new(float64)
+		return new(*float64)
 	case "BOOL":
-		return new(bool)
+		return new(*bool)
 	case "JSONB":
 		return map[string]interface{}{}
 	default:
-		return new(interface{})
+		return new(*interface{})
 	}
 }
 
