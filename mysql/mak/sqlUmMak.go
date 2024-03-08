@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"reflect"
 	"strings"
 )
 
@@ -35,20 +34,15 @@ func (um *SQLUM) toAbstractSQLMakChild() AbstractSQLMakChild {
 }
 func (um *SQLUM) UPDATE(table interface{}, alias string) *SQLUM {
 	switch tv := table.(type) {
-	case reflect.Type:
-		um.tables = append(um.tables, um.TableName(tv)+" "+alias)
 	case string:
 		um.tables = append(um.tables, tv+" "+alias)
+	default:
+		um.tables = append(um.tables, um.TableName(tv)+" "+alias)
 	}
 	return um
 }
 func (um *SQLUM) LEFT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
 	switch tv := table.(type) {
-	case reflect.Type:
-		if um.joins == nil {
-			um.joins = make([]interface{}, 0)
-		}
-		um.joins = append(um.joins, "LEFT JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	case string:
 		if um.joins == nil {
 			um.joins = make([]interface{}, 0)
@@ -61,6 +55,11 @@ func (um *SQLUM) LEFT_JOIN(table interface{}, alias string, on string, args ...i
 		}
 		um.joins = append(um.joins, []interface{}{"LEFT JOIN ", A{tv, alias}, " ON " + on})
 		um.args = append(um.args, tv.args...)
+	default:
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
+		}
+		um.joins = append(um.joins, "LEFT JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	}
 	um.args = append(um.args, args...)
 	return um
@@ -68,11 +67,6 @@ func (um *SQLUM) LEFT_JOIN(table interface{}, alias string, on string, args ...i
 
 func (um *SQLUM) RIGHT_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
 	switch tv := table.(type) {
-	case reflect.Type:
-		if um.joins == nil {
-			um.joins = make([]interface{}, 0)
-		}
-		um.joins = append(um.joins, "RIGHT JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	case string:
 		if um.joins == nil {
 			um.joins = make([]interface{}, 0)
@@ -85,6 +79,11 @@ func (um *SQLUM) RIGHT_JOIN(table interface{}, alias string, on string, args ...
 		}
 		um.joins = append(um.joins, []interface{}{"RIGHT JOIN ", A{tv, alias}, " ON " + on})
 		um.args = append(um.args, tv.args...)
+	default:
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
+		}
+		um.joins = append(um.joins, "RIGHT JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	}
 	um.args = append(um.args, args...)
 	return um
@@ -92,11 +91,6 @@ func (um *SQLUM) RIGHT_JOIN(table interface{}, alias string, on string, args ...
 
 func (um *SQLUM) INNER_JOIN(table interface{}, alias string, on string, args ...interface{}) *SQLUM {
 	switch tv := table.(type) {
-	case reflect.Type:
-		if um.joins == nil {
-			um.joins = make([]interface{}, 0)
-		}
-		um.joins = append(um.joins, "INNER JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	case string:
 		if um.joins == nil {
 			um.joins = make([]interface{}, 0)
@@ -109,6 +103,11 @@ func (um *SQLUM) INNER_JOIN(table interface{}, alias string, on string, args ...
 		}
 		um.joins = append(um.joins, []interface{}{"INNER JOIN ", A{tv, alias}, " ON " + on})
 		um.args = append(um.args, tv.args...)
+	default:
+		if um.joins == nil {
+			um.joins = make([]interface{}, 0)
+		}
+		um.joins = append(um.joins, "INNER JOIN "+um.TableName(tv)+" "+alias+" ON "+on)
 	}
 	um.args = append(um.args, args...)
 	return um
