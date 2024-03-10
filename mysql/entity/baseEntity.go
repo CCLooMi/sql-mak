@@ -72,6 +72,14 @@ type IdEntity struct {
 	BaseEntity `json:"-"`
 	Id         *string `orm:"varchar(32) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id" insertExp:"IFNULL(?,REPLACE(UUID(), '-', ''))"`
 }
+type Id40Entity struct {
+	BaseEntity `json:"-"`
+	Id         *string `orm:"varchar(40) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id" insertExp:"IFNULL(?,SHA1(CONCAT(UUID(),UUID())))"`
+}
+type Id64Entity struct {
+	BaseEntity `json:"-"`
+	Id         *string `orm:"varchar(64) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id" insertExp:"IFNULL(?,SHA2(CONCAT(UUID(),UUID()), 256))"`
+}
 type LongIdEntity struct {
 	BaseEntity `json:"-"`
 	Id         *int64 `orm:"bigint auto_increment not null comment '主键ID'" column:"id" primaryKey:"true" json:"id"`
