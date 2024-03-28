@@ -47,6 +47,21 @@ func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
 	}
 	return list
 }
+func (exe *MySQLSMExecutor) GetResultAsCSVData() [][]string {
+	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	if err != nil {
+		panic(err)
+	}
+	rows, err := stmp.Query(exe.Mak.Args()...)
+	if err != nil {
+		panic(err)
+	}
+	data, err := exe.RowsToCSV(rows)
+	if err != nil {
+		panic(err)
+	}
+	return data
+}
 func (exe *MySQLSMExecutor) GetResultAsList() []interface{} {
 	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
 	if err != nil {

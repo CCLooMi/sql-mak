@@ -9,27 +9,24 @@ type SQLSMExecutor struct {
 	SQLSMExecutorChild
 	SM *SQLSM
 }
-
 type SQLSMExecutorChild interface {
 	GetResultAsMap() map[string]interface{}
 	GetResultAsMapList() []map[string]interface{}
+	GetResultAsCSVData() [][]string
 	GetResultAsList() []interface{}
 	ExtractorResultSet(rse ResultSetExtractor) interface{}
 	ExtractorResultTo(out interface{})
 	Count() int64
 }
-
 type PageDataBean struct {
 	TotalNumber int64
 	Data        interface{}
 	Headers     []string
 }
-
 type PageCSVDataBean struct {
 	TotalNumber int64
 	Data        [][]string
 }
-
 type ByPageFilter interface {
 	DoFilter(rs *sql.Rows)
 }
@@ -40,11 +37,9 @@ func NewSQLSMExecutor(sm *SQLSM) *SQLSMExecutor {
 	sme.SQLExecutor = *NewSQLExecutor(mak)
 	return sme
 }
-
 func (e *SQLSMExecutor) GetResultAsListByPage(pageNumber, pageSize, totalNumber int) PageDataBean {
 	return e.GetResultAsListByPageWithFilter(pageNumber, pageSize, totalNumber, nil)
 }
-
 func (e *SQLSMExecutor) GetResultAsListByPageWithFilter(pageNumber, pageSize, totalNumber int, byPageFilter ByPageFilter) PageDataBean {
 	pageData := PageDataBean{}
 	page := pageNumber - 1
@@ -94,14 +89,12 @@ func (e *SQLSMExecutor) GetResultAsListByPageWithFilter(pageNumber, pageSize, to
 	}
 	return pageData
 }
-
 func (e *SQLSMExecutor) DefaultIfNull(value, defaultValue interface{}) interface{} {
 	if value == nil {
 		return defaultValue
 	}
 	return value
 }
-
 func (e *SQLSMExecutor) RowsToMap(rows *sql.Rows) (map[string]interface{}, error) {
 	columns, err := rows.Columns()
 	if err != nil {
@@ -192,7 +185,36 @@ func (e *SQLSMExecutor) RowsToMaps(rows *sql.Rows) ([]map[string]interface{}, er
 	// Return result
 	return maps, nil
 }
-
+func (e *SQLSMExecutor) RowsToCSV(rows *sql.Rows) ([][]string, error) {
+	// Get column names
+	columns, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+	list := make([][]string, 0)
+	list = append(list, columns)
+	defer rows.Close()
+	for rows.Next() {
+		rowData := make([]interface{}, len(columns))
+		for i := range rowData {
+			rowData[i] = new(*string)
+		}
+		err := rows.Scan(rowData...)
+		if err != nil {
+			return nil, err
+		}
+		row := make([]string, len(columns))
+		for i := range rowData {
+			ri := rowData[i]
+			rii := *ri.(**string)
+			if rii != nil {
+				row[i] = *rii
+			}
+		}
+		list = append(list, row)
+	}
+	return list, nil
+}
 func (e *SQLSMExecutor) ColumnToList(rows *sql.Rows, col int) ([]interface{}, error) {
 	colTypes, err := rows.ColumnTypes()
 	if err != nil {
