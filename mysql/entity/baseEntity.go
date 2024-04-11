@@ -101,14 +101,14 @@ type TimestampEntity struct {
 	UpdatedAt  *int64 `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW())"`
 }
 type AuditEntity struct {
-	CreatedBy *string `orm:"varchar(32) not null comment '创建人'" column:"inserted_by" json:"insertedBy"`
-	UpdatedBy *string `orm:"varchar(32) not null comment '更新人'" column:"updated_by" json:"updatedBy"`
+	InsertedBy *string `orm:"varchar(32) not null comment '创建人'" column:"inserted_by" json:"insertedBy"`
+	UpdatedBy  *string `orm:"varchar(32) not null comment '更新人'" column:"updated_by" json:"updatedBy"`
 }
 type BAuditEntity struct {
-	CreatedBy *[]byte `orm:"binary(16) not null comment '创建人'" column:"inserted_by" json:"insertedBy"`
-	UpdatedBy *[]byte `orm:"binary(16) not null comment '更新人'" column:"updated_by" json:"updatedBy"`
+	InsertedBy *[]byte `orm:"binary(16) not null comment '创建人'" column:"inserted_by" json:"insertedBy"`
+	UpdatedBy  *[]byte `orm:"binary(16) not null comment '更新人'" column:"updated_by" json:"updatedBy"`
 }
 type LongAuditEntity struct {
-	CreatedBy *int64 `orm:"bigint not null comment '创建人'" column:"inserted_by" json:"insertedBy"`
-	UpdatedBy *int64 `orm:"bigint not null comment '更新人'" column:"updated_by" json:"updatedBy"`
+	InsertedBy *int64 `orm:"bigint not null comment '创建人'" column:"inserted_by" json:"insertedBy"`
+	UpdatedBy  *int64 `orm:"bigint not null comment '更新人'" column:"updated_by" json:"updatedBy"`
 }
