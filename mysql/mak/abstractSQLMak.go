@@ -1,15 +1,15 @@
 package mak
 
 import (
+	"go.uber.org/zap"
 	"strings"
 
 	"github.com/CCLooMi/sql-mak/utils"
-	"github.com/sirupsen/logrus"
 )
 
 type AbstractSQLMak struct {
 	SQLMak
-	Log        *logrus.Logger
+	Log        *zap.Logger
 	logSql     bool
 	args       []interface{}
 	batchArgs  [][]interface{}
@@ -36,8 +36,9 @@ type B struct {
 }
 
 func NewAbstractSQLMak(child *AbstractSQLMakChild) *AbstractSQLMak {
+	log, _ := zap.NewProduction()
 	agod := &AbstractSQLMak{
-		Log:        logrus.New(),
+		Log:        log,
 		logSql:     true,
 		args:       make([]interface{}, 0),
 		hasSubArgs: false,
@@ -81,7 +82,7 @@ func (g *AbstractSQLMak) Sql() string {
 	var sb strings.Builder
 	g.child._sql(&sb)
 	if g.logSql {
-		g.Log.Println("sql:", sb.String(), g.args)
+		g.Log.Sugar().Infow("sql:", sb.String(), g.args)
 	}
 	return sb.String()
 }
@@ -90,7 +91,7 @@ func (g *AbstractSQLMak) CountSql() string {
 	var sb strings.Builder
 	g.child._countSQL(&sb)
 	if g.logSql {
-		g.Log.Println("sql:", sb.String(), g.args)
+		g.Log.Sugar().Infow("sql:", sb.String(), g.args)
 	}
 	return sb.String()
 }

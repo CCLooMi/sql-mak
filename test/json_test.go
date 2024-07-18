@@ -133,8 +133,8 @@ func TestBaseEntity(ts *testing.T) {
 			UpdatedAt:  &t,
 		},
 		BAuditEntity: entity.BAuditEntity{
-			CreatedBy: &[]byte{1, 2, 3, 4, 5},
-			UpdatedBy: &[]byte{1, 2, 3, 4, 5},
+			InsertedBy: &[]byte{1, 2, 3, 4, 5},
+			UpdatedBy:  &[]byte{1, 2, 3, 4, 5},
 		},
 	}
 	r, err := json.Marshal(u)
