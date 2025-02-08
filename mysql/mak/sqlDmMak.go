@@ -78,12 +78,12 @@ func (dm *SQLDM) WHERE_IN(column string, args ...interface{}) *SQLDM {
 	return dm
 }
 
-func (dm *SQLDM) WHERE_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLDM {
+func (dm *SQLDM) WHERE_SUBQUERY(column string, inOrNotIn string, subquery *SQLSM) *SQLDM {
 	var sb strings.Builder
 	sb.WriteString("WHERE ")
 	sb.WriteString(column)
 	sb.WriteRune(' ')
-	sb.WriteString(inOrNotIn.value())
+	sb.WriteString(inOrNotIn)
 	sb.WriteRune('(')
 	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
@@ -114,12 +114,12 @@ func (dm *SQLDM) AND_IN(column string, args ...interface{}) *SQLDM {
 	return dm
 }
 
-func (dm *SQLDM) AND_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLDM {
+func (dm *SQLDM) AND_SUBQUERY(column string, inOrNotIn string, subquery *SQLSM) *SQLDM {
 	var sb strings.Builder
 	sb.WriteString("AND ")
 	sb.WriteString(column)
 	sb.WriteRune(' ')
-	sb.WriteString(inOrNotIn.value())
+	sb.WriteString(inOrNotIn)
 	sb.WriteRune('(')
 	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
@@ -150,12 +150,12 @@ func (dm *SQLDM) OR_IN(column string, args ...interface{}) *SQLDM {
 	return dm
 }
 
-func (dm *SQLDM) OR_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLDM {
+func (dm *SQLDM) OR_SUBQUERY(column string, inOrNotIn string, subquery *SQLSM) *SQLDM {
 	var sb strings.Builder
 	sb.WriteString("OR ")
 	sb.WriteString(column)
 	sb.WriteRune(' ')
-	sb.WriteString(inOrNotIn.value())
+	sb.WriteString(inOrNotIn)
 	sb.WriteRune('(')
 	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')

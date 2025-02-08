@@ -253,13 +253,13 @@ func (s *SQLSM) WHERE(where string, args ...interface{}) *SQLSM {
 	return s
 }
 
-func (s *SQLSM) WHERE_IN(column string, inOrNotIn IN, args ...interface{}) *SQLSM {
+func (s *SQLSM) WHERE_IN(column string, inOrNotIn string, args ...interface{}) *SQLSM {
 	if len(args) > 0 {
 		var sb strings.Builder
 		sb.WriteString("WHERE ")
 		sb.WriteString(column)
 		sb.WriteRune(' ')
-		sb.WriteString(inOrNotIn.value())
+		sb.WriteString(inOrNotIn)
 		sb.WriteRune('(')
 		for i, arg := range args {
 			s.args = append(s.args, arg)
@@ -274,12 +274,12 @@ func (s *SQLSM) WHERE_IN(column string, inOrNotIn IN, args ...interface{}) *SQLS
 	return s
 }
 
-func (s *SQLSM) WHERE_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLSM {
+func (s *SQLSM) WHERE_SUBQUERY(column string, inOrNotIn string, subquery *SQLSM) *SQLSM {
 	var sb strings.Builder
 	sb.WriteString("WHERE ")
 	sb.WriteString(column)
 	sb.WriteRune(' ')
-	sb.WriteString(inOrNotIn.value())
+	sb.WriteString(inOrNotIn)
 	sb.WriteRune('(')
 	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
@@ -297,13 +297,13 @@ func (s *SQLSM) AND(and string, args ...interface{}) *SQLSM {
 	return s
 }
 
-func (s *SQLSM) AND_IN(column string, inOrNotIn IN, args ...interface{}) *SQLSM {
+func (s *SQLSM) AND_IN(column string, inOrNotIn string, args ...interface{}) *SQLSM {
 	if len(args) > 0 {
 		var sb strings.Builder
 		sb.WriteString("AND ")
 		sb.WriteString(column)
 		sb.WriteRune(' ')
-		sb.WriteString(inOrNotIn.value())
+		sb.WriteString(inOrNotIn)
 		sb.WriteRune('(')
 		for i, arg := range args {
 			s.args = append(s.args, arg)
@@ -321,12 +321,12 @@ func (s *SQLSM) AND_IN(column string, inOrNotIn IN, args ...interface{}) *SQLSM 
 	return s
 }
 
-func (s *SQLSM) AND_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLSM {
+func (s *SQLSM) AND_SUBQUERY(column string, inOrNotIn string, subquery *SQLSM) *SQLSM {
 	var sb strings.Builder
 	sb.WriteString("AND ")
 	sb.WriteString(column)
 	sb.WriteRune(' ')
-	sb.WriteString(inOrNotIn.value())
+	sb.WriteString(inOrNotIn)
 	sb.WriteRune('(')
 	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
@@ -346,13 +346,13 @@ func (s *SQLSM) OR(or string, args ...interface{}) *SQLSM {
 	return s
 }
 
-func (s *SQLSM) OR_IN(column string, inOrNotIn IN, args ...interface{}) *SQLSM {
+func (s *SQLSM) OR_IN(column string, inOrNotIn string, args ...interface{}) *SQLSM {
 	if len(args) > 0 {
 		var sb strings.Builder
 		sb.WriteString("OR ")
 		sb.WriteString(column)
 		sb.WriteRune(' ')
-		sb.WriteString(inOrNotIn.value())
+		sb.WriteString(inOrNotIn)
 		sb.WriteRune('(')
 		for i, arg := range args {
 			s.args = append(s.args, arg)
@@ -370,12 +370,12 @@ func (s *SQLSM) OR_IN(column string, inOrNotIn IN, args ...interface{}) *SQLSM {
 	return s
 }
 
-func (s *SQLSM) OR_SUBQUERY(column string, inOrNotIn IN, subquery *SQLSM) *SQLSM {
+func (s *SQLSM) OR_SUBQUERY(column string, inOrNotIn string, subquery *SQLSM) *SQLSM {
 	var sb strings.Builder
 	sb.WriteString("OR ")
 	sb.WriteString(column)
 	sb.WriteRune(' ')
-	sb.WriteString(inOrNotIn.value())
+	sb.WriteString(inOrNotIn)
 	sb.WriteRune('(')
 	sb.WriteString(subquery.Sql())
 	sb.WriteRune(')')
