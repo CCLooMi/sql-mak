@@ -89,16 +89,16 @@ type BidEntity struct {
 	Id         *[]byte `orm:"binary(16) not null comment '主键ID'" column:"id" primaryKey:"true" json:"id" insertExp:"IFNULL(?,UNHEX(REPLACE(UUID(), '-', '')))"`
 }
 type TimeEntity struct {
-	InsertedAt *time.Time `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW())"`
-	UpdatedAt  *time.Time `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW())"`
+	InsertedAt *time.Time `orm:"datetime(6) not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW(6))"`
+	UpdatedAt  *time.Time `orm:"datetime(6) not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW(6))"`
 }
 type StrTimeEntity struct {
-	InsertedAt *string `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW())"`
-	UpdatedAt  *string `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW())"`
+	InsertedAt *string `orm:"datetime(6) not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW(6))"`
+	UpdatedAt  *string `orm:"datetime(6) not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW(6))"`
 }
 type TimestampEntity struct {
-	InsertedAt *int64 `orm:"datetime not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW())"`
-	UpdatedAt  *int64 `orm:"datetime not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW())"`
+	InsertedAt *int64 `orm:"datetime(6) not null comment '插入时间'" column:"inserted_at" json:"insertedAt" insertExp:"IFNULL(?, NOW(6))"`
+	UpdatedAt  *int64 `orm:"datetime(6) not null comment '更新时间'" column:"updated_at" json:"updatedAt" insertExp:"IFNULL(?, NOW(6))"`
 }
 type AuditEntity struct {
 	InsertedBy *string `orm:"varchar(32) not null comment '创建人'" column:"inserted_by" json:"insertedBy"`

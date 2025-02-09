@@ -35,7 +35,7 @@ func (e *EXP) Args() []interface{} {
 
 func Now() *EXP {
 	return &EXP{
-		exp: "NOW()",
+		exp: "NOW(6)",
 	}
 }
 
