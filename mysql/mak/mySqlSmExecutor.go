@@ -19,6 +19,7 @@ func NewMySQLSMExecutor(sm *SQLSM, mdb *sql.DB) *MySQLSMExecutor {
 
 func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	defer stmp.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -34,6 +35,7 @@ func (exe *MySQLSMExecutor) GetResultAsMap() map[string]interface{} {
 }
 func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
 	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	defer stmp.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -49,6 +51,7 @@ func (exe *MySQLSMExecutor) GetResultAsMapList() []map[string]interface{} {
 }
 func (exe *MySQLSMExecutor) GetResultAsCSVData() [][]string {
 	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	defer stmp.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -64,6 +67,7 @@ func (exe *MySQLSMExecutor) GetResultAsCSVData() [][]string {
 }
 func (exe *MySQLSMExecutor) GetResultAsList() []interface{} {
 	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	defer stmp.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -79,6 +83,7 @@ func (exe *MySQLSMExecutor) GetResultAsList() []interface{} {
 }
 func (exe *MySQLSMExecutor) ExtractorResultSet(rse ResultSetExtractor) interface{} {
 	stmp, err := exe.MDB.Prepare(exe.Mak.Sql())
+	defer stmp.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -152,6 +157,7 @@ func RowsToOut(rs *sql.Rows, out reflect.Value) {
 
 func (exe *MySQLSMExecutor) Count() int64 {
 	stmp, err := exe.MDB.Prepare(exe.Mak.CountSql())
+	defer stmp.Close()
 	if err != nil {
 		panic(err)
 	}
