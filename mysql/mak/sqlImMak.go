@@ -35,20 +35,25 @@ func (im *SQLIM) INSERT_INTO(table interface{}, columns ...string) *SQLIM {
 	switch t := table.(type) {
 	case string:
 		im.table = t
-	default:
-		im.table = im.TableName(table)
-	}
-	if len(columns) == 0 {
-		ei := utils.GetEntityInfo(table)
-		if ei == nil {
+		if len(columns) == 0 {
 			return im
 		}
-		im.columns = append(im.columns, ei.Columns...)
-		im.entityArgs = utils.GetFieldValues(table, ei.Fields)
-	} else {
 		im.columns = append(im.columns, columns...)
+		return im
+	default:
+		im.table = im.TableName(table)
+		if len(columns) == 0 {
+			ei := utils.GetEntityInfo(table)
+			if ei == nil {
+				return im
+			}
+			im.columns = append(im.columns, ei.Columns...)
+			im.entityArgs = utils.GetFieldValues(table, ei.Fields)
+			return im
+		}
+		im.columns = append(im.columns, columns...)
+		return im
 	}
-	return im
 }
 
 func (im *SQLIM) INTO_COLUMNS(columns ...string) *SQLIM {
